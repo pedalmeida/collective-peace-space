@@ -20,7 +20,7 @@ export const Header = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
-      <div className="container flex items-center justify-between h-16 text-center">
+      <div className="container flex items-center justify-center h-16 text-center">
         
 
         
