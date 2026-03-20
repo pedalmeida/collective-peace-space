@@ -73,7 +73,7 @@ export const FloatingNav = ({
         )}
       >
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden lg:flex items-center gap-1">
           {navItems.map((navItem, idx) => {
             const sectionId = navItem.link.replace("#", "");
             const isActive = activeSection === sectionId;
@@ -94,10 +94,10 @@ export const FloatingNav = ({
           })}
         </nav>
 
-        {/* Mobile: hamburger toggle */}
+        {/* Tablet & Mobile: hamburger toggle */}
         <button
           onClick={() => setDrawerOpen(true)}
-          className="md:hidden flex flex-col gap-[4px] p-2 rounded-lg hover:bg-accent/30 transition-colors"
+          className="lg:hidden flex flex-col gap-[4px] p-2 rounded-lg hover:bg-accent/30 transition-colors"
           aria-label="Abrir menu"
         >
           <span className="block w-5 h-[2px] bg-foreground rounded-full" />
@@ -105,15 +105,10 @@ export const FloatingNav = ({
           <span className="block w-5 h-[2px] bg-foreground rounded-full" />
         </button>
 
-        {/* Mobile: active section label */}
-        <span className="md:hidden text-sm text-foreground font-medium px-1">
-          {navItems.find((i) => i.link.replace("#", "") === activeSection)?.name || navItems[0]?.name}
-        </span>
-
         {/* CTA (desktop) */}
         {ctaLabel && (
           <motion.div
-            className="hidden md:flex items-center overflow-hidden"
+            className="hidden lg:flex items-center overflow-hidden"
             initial={false}
             animate={{
               maxWidth: pastHero ? 200 : 0,
@@ -146,7 +141,7 @@ export const FloatingNav = ({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
               onClick={() => setDrawerOpen(false)}
-              className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-[5001] md:hidden"
+              className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-[5001] lg:hidden"
             />
 
             {/* Drawer panel */}
@@ -155,7 +150,7 @@ export const FloatingNav = ({
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="fixed top-0 right-0 bottom-0 w-[280px] max-w-[80vw] bg-background/95 backdrop-blur-xl border-l border-border/30 shadow-2xl z-[5002] md:hidden flex flex-col"
+              className="fixed top-0 right-0 bottom-0 w-[280px] max-w-[80vw] bg-background/95 backdrop-blur-xl border-l border-border/30 shadow-2xl z-[5002] lg:hidden flex flex-col"
             >
               {/* Close button */}
               <div className="flex items-center justify-end p-5">
