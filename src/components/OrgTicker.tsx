@@ -4,6 +4,9 @@ import orgAnandaMarga from "@/assets/org-anandamarga.png";
 import orgFcul from "@/assets/org-fcul.png";
 import orgPadmaYoga from "@/assets/org-padmayoga.png";
 import orgAdiram from "@/assets/org-adiram.png";
+import orgCentroReiki from "@/assets/org-centro-reiki.png";
+import orgIrbyCenter from "@/assets/org-irby-center.png";
+import orgYogaCoracao from "@/assets/org-yoga-coracao.png";
 
 const organizations = [
   { name: "Bhakti Marga", logo: orgBhaktiMarga },
@@ -11,6 +14,9 @@ const organizations = [
   { name: "Núcleo Meditação FCUL", logo: orgFcul },
   { name: "Padma Yoga", logo: orgPadmaYoga },
   { name: "Adiram Europe", logo: orgAdiram },
+  { name: "Centro de Reiki e Meditação Clássica", logo: orgCentroReiki },
+  { name: "IRBY-Center", logo: orgIrbyCenter },
+  { name: "Yoga na Linha do Coração", logo: orgYogaCoracao },
 ];
 
 export const OrgTicker = () => {
