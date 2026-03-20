@@ -17,8 +17,8 @@ export const OrgTicker = () => {
   const items = [...organizations, ...organizations, ...organizations];
 
   return (
-    <section className="py-8 md:py-10 overflow-hidden border-b border-border/30">
-      <p className="text-xs tracking-[0.25em] uppercase text-muted-foreground text-center mb-6">
+    <section className="pt-3 pb-8 md:pt-4 md:pb-10 overflow-hidden border-b border-border/30">
+      <p className="text-xs tracking-[0.25em] uppercase text-muted-foreground text-center mb-8 md:mb-10">
         Organizado por escolas de todo o país
       </p>
       <div className="relative">
