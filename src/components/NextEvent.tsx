@@ -3,7 +3,7 @@ import { motion, useInView } from "motion/react";
 import { useRef } from "react";
 import { TextReveal } from "./TextReveal";
 import { CalendarDays, MapPin, Footprints, Loader2 } from "lucide-react";
-import { MagneticButton } from "./MagneticButton";
+import { CalendarDropdown } from "./CalendarDropdown";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -45,25 +45,6 @@ const AnimatedNumber = ({ value }: { value: number }) => {
     </span>
   );
 };
-
-function buildCalendarUrl(event: Event) {
-  const dateStr = event.date.replace(/-/g, "");
-  const timeStr = event.time.replace(/:/g, "").slice(0, 4);
-  const start = `${dateStr}T${timeStr}00`;
-  // assume 2h duration
-  const endHour = (parseInt(event.time.slice(0, 2)) + 2).toString().padStart(2, "0");
-  const end = `${dateStr}T${endHour}${event.time.slice(3, 5)}00`;
-
-  const params = new URLSearchParams({
-    action: "TEMPLATE",
-    text: event.title,
-    dates: `${start}/${end}`,
-    location: event.location,
-    details: event.description ?? "",
-  });
-
-  return `https://calendar.google.com/calendar/render?${params.toString()}`;
-}
 
 export const NextEvent = () => {
   const [event, setEvent] = useState<Event | null>(null);
@@ -142,12 +123,7 @@ export const NextEvent = () => {
             />
           )}
 
-          <MagneticButton
-            href={buildCalendarUrl(event)}
-            className="inline-block bg-accent text-accent-foreground px-8 py-3.5 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97]"
-          >
-            Adicionar ao calendário
-          </MagneticButton>
+          <CalendarDropdown event={event} />
         </motion.div>
       </div>
     </section>

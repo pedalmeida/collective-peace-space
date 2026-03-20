@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { ArrowLeft, CalendarDays, MapPin, Footprints, Loader2 } from "lucide-react";
+import { CalendarDropdown } from "@/components/CalendarDropdown";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -9,23 +10,6 @@ import type { Tables } from "@/integrations/supabase/types";
 
 type Event = Tables<"events">;
 
-function buildCalendarUrl(event: Event) {
-  const dateStr = event.date.replace(/-/g, "");
-  const timeStr = event.time.replace(/:/g, "").slice(0, 4);
-  const start = `${dateStr}T${timeStr}00`;
-  const endHour = (parseInt(event.time.slice(0, 2)) + 2).toString().padStart(2, "0");
-  const end = `${dateStr}T${endHour}${event.time.slice(3, 5)}00`;
-
-  const params = new URLSearchParams({
-    action: "TEMPLATE",
-    text: event.title,
-    dates: `${start}/${end}`,
-    location: event.location,
-    details: event.description ?? "",
-  });
-
-  return `https://calendar.google.com/calendar/render?${params.toString()}`;
-}
 
 const EventDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -152,16 +136,7 @@ const EventDetail = () => {
                 </motion.div>
               )}
 
-              {!event.is_past && (
-                <a
-                  href={buildCalendarUrl(event)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block bg-accent text-accent-foreground px-8 py-3.5 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97]"
-                >
-                  Adicionar ao calendário
-                </a>
-              )}
+              {!event.is_past && <CalendarDropdown event={event} />}
             </motion.div>
           </div>
         </section>
