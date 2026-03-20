@@ -1,6 +1,6 @@
-import meditationGroup from "@/assets/meditation-group-1.jpg";
-import meditationPortrait from "@/assets/meditation-portrait.jpg";
-import meditationCircle from "@/assets/meditation-circle.jpg";
+import meditationGlobe from "@/assets/meditation-globe.jpg";
+import meditationGroup from "@/assets/meditation-group-real.jpg";
+import meditationCircle from "@/assets/meditation-circle-real.jpg";
 import { Reveal } from "./Reveal";
 
 export const Hero = () => {
@@ -32,25 +32,25 @@ export const Hero = () => {
           {/* Editorial image grid */}
           <Reveal delay={1}>
             <div className="grid grid-cols-5 grid-rows-4 gap-3 h-[420px] md:h-[480px]">
-              <div className="col-span-3 row-span-4 rounded-xl overflow-hidden">
+              <div className="col-span-2 row-span-4 rounded-xl overflow-hidden">
                 <img
-                  src={meditationGroup}
-                  alt="Grupo de pessoas a meditar num parque ao pôr do sol"
+                  src={meditationGlobe}
+                  alt="Mão a segurar um globo terrestre durante meditação"
                   className="w-full h-full object-cover"
                   loading="eager"
                 />
               </div>
-              <div className="col-span-2 row-span-2 rounded-xl overflow-hidden">
+              <div className="col-span-3 row-span-2 rounded-xl overflow-hidden">
                 <img
-                  src={meditationPortrait}
-                  alt="Retrato sereno de pessoa em meditação"
+                  src={meditationGroup}
+                  alt="Grupo de pessoas a meditar num parque"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="col-span-2 row-span-2 rounded-xl overflow-hidden">
+              <div className="col-span-3 row-span-2 rounded-xl overflow-hidden">
                 <img
                   src={meditationCircle}
-                  alt="Círculo de meditação num jardim"
+                  alt="Círculo de meditação ao ar livre em Lisboa"
                   className="w-full h-full object-cover"
                 />
               </div>
