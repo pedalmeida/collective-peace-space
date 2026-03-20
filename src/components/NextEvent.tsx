@@ -119,7 +119,7 @@ export const NextEvent = () => {
             <img
               src={event.flyer_url}
               alt={`Flyer ${event.title}`}
-              className="w-full max-w-xs mx-auto rounded-lg border border-border"
+              className="w-full max-w-sm mx-auto rounded-lg border border-border"
             />
           )}
 
