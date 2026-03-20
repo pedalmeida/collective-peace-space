@@ -22,21 +22,10 @@ export const FloatingNav = ({
   className?: string;
 }) => {
   const { scrollYProgress } = useScroll();
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
   const [activeSection, setActiveSection] = useState<string>("");
   const [pastHero, setPastHero] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  // Show navbar when scrolled past top
-  useMotionValueEvent(scrollYProgress, "change", (current) => {
-    if (typeof current === "number") {
-      if (scrollYProgress.get() < 0.02) {
-        setVisible(false);
-      } else {
-        setVisible(true);
-      }
-    }
-  });
 
   // Track active section & past-hero state
   const updateActiveSection = useCallback(() => {
