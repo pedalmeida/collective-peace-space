@@ -1,34 +1,42 @@
 
 
-## Adicionar ao Calendário — Multi-plataforma
+## Guardar emails de subscritores na base de dados
 
 ### O que muda
-O botão "Adicionar ao calendário" passa a abrir um pequeno dropdown com 3 opções:
-- **Google Calendar** — abre link directo (já implementado)
-- **Apple Calendar** — gera e descarrega ficheiro `.ics`
-- **Outlook** — gera e descarrega ficheiro `.ics` (mesmo formato, mesmo ficheiro)
+O formulário "Receber informações dos eventos" passa a guardar o email na base de dados. Se o email já existir, mostra a mensagem "Já temos o teu email! Receberás as novidades." em vez de o inserir novamente.
 
 ### Implementação
 
-**1. Criar utilitário `src/lib/calendar.ts`**
-- Função `buildGoogleCalendarUrl(event)` — extraída do código duplicado em `NextEvent.tsx` e `EventDetail.tsx`
-- Função `generateIcsFile(event)` — gera string ICS com VCALENDAR/VEVENT e dispara download via `Blob` + `URL.createObjectURL`
+**1. Criar tabela `subscribers` (migração)**
+```sql
+CREATE TABLE public.subscribers (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  email text NOT NULL UNIQUE,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
 
-**2. Criar componente `src/components/CalendarDropdown.tsx`**
-- Botão principal com o texto actual "Adicionar ao calendário"
-- Ao clicar, abre um Popover (usando `@radix-ui/react-popover` já disponível) com 3 opções:
-  - Google Calendar (ícone + label) → abre URL nova tab
-  - Apple Calendar (ícone + label) → download .ics
-  - Outlook (ícone + label) → download .ics
-- Estilo consistente com o design actual (accent colors, rounded-lg, tracking-wide)
+ALTER TABLE public.subscribers ENABLE ROW LEVEL SECURITY;
 
-**3. Substituir botões existentes**
-- `NextEvent.tsx` — trocar `MagneticButton` pelo novo `CalendarDropdown`
-- `EventDetail.tsx` — trocar o `<a>` pelo novo `CalendarDropdown`
-- Remover as funções `buildCalendarUrl` duplicadas de ambos os ficheiros
+-- Qualquer pessoa pode inserir (subscrever-se)
+CREATE POLICY "Anyone can subscribe"
+  ON public.subscribers FOR INSERT
+  TO public
+  WITH CHECK (true);
 
-### Detalhes técnicos
-- Formato ICS padrão RFC 5545, sem dependências externas
-- O ficheiro `.ics` funciona nativamente no Apple Calendar, Outlook desktop/web e qualquer app compatível
-- O dropdown fecha ao clicar fora ou ao seleccionar uma opção
+-- Admins podem ver todos os subscritores
+CREATE POLICY "Admins can view subscribers"
+  ON public.subscribers FOR SELECT
+  TO authenticated
+  USING (has_role(auth.uid(), 'admin'::app_role));
+```
+
+Note: a tabela não expõe emails publicamente — apenas admins podem fazer SELECT.
+
+**2. Actualizar `Participate.tsx`**
+- Importar `supabase` client
+- No `handleSubmit`: tentar inserir o email; se falhar com código de violação de unicidade (`23505`), mostrar mensagem "Já temos o teu email!"
+- Adicionar estado de loading e de "já existe"
+- Mensagem de sucesso: "Obrigado! Receberás notificações sobre os próximos eventos. 🪷"
+- Mensagem de duplicado: "Já temos o teu email! Receberás as novidades. 🪷"
+- Mensagem de erro genérico com toast
 
