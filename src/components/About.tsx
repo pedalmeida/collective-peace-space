@@ -1,34 +1,27 @@
-import { Reveal } from "./Reveal";
 import { TextReveal } from "./TextReveal";
 import { motion } from "motion/react";
 import meditationGlobe from "@/assets/meditation-globe.jpg";
+import { AnimatedImage } from "./AnimatedImage";
 
 export const About = () => {
   return (
     <section id="sobre" className="section-padding relative">
-      {/* Gradient accent line top */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
 
       <div className="container">
         <div className="grid md:grid-cols-2 gap-12 md:gap-20 items-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.97, filter: "blur(4px)" }}
-            whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="rounded-2xl overflow-hidden aspect-[4/3]"
-          >
-            <img
+          <div className="rounded-2xl overflow-hidden aspect-[4/3]">
+            <AnimatedImage
               src={meditationGlobe}
               alt="Mão a segurar um globo terrestre durante meditação"
               className="w-full h-full object-cover object-bottom"
             />
-          </motion.div>
+          </div>
           <motion.div
             initial={{ opacity: 0, x: 24, filter: "blur(4px)" }}
             whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
             viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] as [number, number, number, number], delay: 0.15 }}
             className="space-y-6"
           >
             <p className="text-sm tracking-widest uppercase text-accent font-medium">
