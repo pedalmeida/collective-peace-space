@@ -9,6 +9,7 @@ interface MagneticButtonProps {
   type?: "button" | "submit";
   onClick?: () => void;
   strength?: number;
+  disabled?: boolean;
 }
 
 export const MagneticButton = ({
