@@ -8,7 +8,7 @@ export const Organizers = () => {
           <p className="text-sm tracking-widest uppercase text-accent font-medium mb-4">
             Com o apoio de…
           </p>
-          <h2 className="text-foreground mb-8">Organizadores</h2>
+          <h2 className="text-foreground mb-8">Queres fazer parte da organização?</h2>
           <div className="space-y-4 text-muted-foreground leading-relaxed mb-8">
             <p>
               Um grupo de cidadãos unidos pela sua aspiração por um mundo melhor
@@ -24,6 +24,6 @@ export const Organizers = () => {
           </p>
         </Reveal>
       </div>
-    </section>
-  );
+    </section>);
+
 };
