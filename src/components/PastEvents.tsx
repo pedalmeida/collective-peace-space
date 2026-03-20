@@ -1,14 +1,8 @@
 import { motion } from "motion/react";
 import { MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
 import { TextReveal } from "./TextReveal";
-
-const pastEvents = [
-  { date: "Sábado, 25 de Outubro 2025", location: "Jardins da Torre de Belém" },
-  { date: "Domingo, 30 de Novembro 2025", location: "Pavilhão de Portugal" },
-  { date: "Sábado, 20 de Dezembro 2025", location: "Jardim Botânico de Lisboa" },
-  { date: "Domingo, 25 de Janeiro 2026", location: "Parque das Nações" },
-  { date: "Sábado, 28 de Fevereiro 2026", location: "Jardim da Estrela" },
-];
+import { pastEvents } from "@/data/events";
 
 const itemVariants = {
   hidden: (i: number) => ({
