@@ -26,9 +26,9 @@ export const Hero = () => {
         <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
           <Reveal>
             <div className="space-y-6">
-              <p className="text-sm tracking-widest uppercase text-primary font-medium">
+              <span className="inline-block text-[0.8rem] tracking-widest uppercase text-primary font-medium bg-primary/8 border border-primary/15 rounded-full px-4 py-1.5">
                 ◆ EVENTO MENSAL DE MEDITAÇÃO COLETIVA
-              </p>
+              </span>
               <h1 className="text-foreground text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight">
                 <span className="font-sans font-light">Meditar por um</span>
                 <br />
