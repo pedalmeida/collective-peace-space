@@ -94,21 +94,16 @@ export const FloatingNav = ({
           })}
         </nav>
 
-        {/* Mobile: hamburger toggle */}
+        {/* Tablet & Mobile: hamburger toggle */}
         <button
           onClick={() => setDrawerOpen(true)}
-          className="md:hidden flex flex-col gap-[4px] p-2 rounded-lg hover:bg-accent/30 transition-colors"
+          className="lg:hidden flex flex-col gap-[4px] p-2 rounded-lg hover:bg-accent/30 transition-colors"
           aria-label="Abrir menu"
         >
           <span className="block w-5 h-[2px] bg-foreground rounded-full" />
           <span className="block w-5 h-[2px] bg-foreground rounded-full" />
           <span className="block w-5 h-[2px] bg-foreground rounded-full" />
         </button>
-
-        {/* Mobile: active section label */}
-        <span className="md:hidden text-sm text-foreground font-medium px-1">
-          {navItems.find((i) => i.link.replace("#", "") === activeSection)?.name || navItems[0]?.name}
-        </span>
 
         {/* CTA (desktop) */}
         {ctaLabel && (
