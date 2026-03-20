@@ -93,7 +93,7 @@ const EventDetail = () => {
               </Link>
 
               <span
-                className={`inline-block text-xs tracking-widest uppercase px-3 py-1 rounded-full mb-5 ${
+                className={`inline-block text-xs tracking-widest uppercase px-3 py-1 rounded-full mb-8 ${
                   event.is_past
                     ? "text-muted-foreground bg-muted"
                     : "text-accent bg-accent/10 border border-accent/20"
