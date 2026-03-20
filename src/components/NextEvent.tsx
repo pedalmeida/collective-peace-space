@@ -3,7 +3,7 @@ import { motion, useInView } from "motion/react";
 import { useRef } from "react";
 import { TextReveal } from "./TextReveal";
 import { CalendarDays, MapPin, Footprints, Loader2 } from "lucide-react";
-import { MagneticButton } from "./MagneticButton";
+import { CalendarDropdown } from "./CalendarDropdown";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 
