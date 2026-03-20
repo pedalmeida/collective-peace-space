@@ -15,7 +15,7 @@ const Index = () => {
     <div className="min-h-screen">
       <Header />
       <main className="pt-16">
-        <div className="relative overflow-hidden">
+        <div className="relative overflow-x-clip overflow-y-visible">
           <BackgroundGradientAnimation
             gradientBackgroundStart="hsl(50, 11%, 95%)"
             gradientBackgroundEnd="hsl(50, 11%, 95%)"
