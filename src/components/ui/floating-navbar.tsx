@@ -23,7 +23,10 @@ export const FloatingNav = ({
 }) => {
   const { scrollYProgress } = useScroll();
   const [visible, setVisible] = useState(true);
-  
+  const [activeSection, setActiveSection] = useState<string>("");
+  const [pastHero, setPastHero] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   // Track active section & past-hero state
   const updateActiveSection = useCallback(() => {
     setPastHero(window.scrollY > window.innerHeight * 0.6);
