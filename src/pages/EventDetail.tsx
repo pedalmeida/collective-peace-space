@@ -1,13 +1,60 @@
 import { useParams, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { ArrowLeft, CalendarDays, MapPin, Footprints } from "lucide-react";
-import { getEventBySlug } from "@/data/events";
+import { ArrowLeft, CalendarDays, MapPin, Footprints, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import type { Tables } from "@/integrations/supabase/types";
+
+type Event = Tables<"events">;
+
+function buildCalendarUrl(event: Event) {
+  const dateStr = event.date.replace(/-/g, "");
+  const timeStr = event.time.replace(/:/g, "").slice(0, 4);
+  const start = `${dateStr}T${timeStr}00`;
+  const endHour = (parseInt(event.time.slice(0, 2)) + 2).toString().padStart(2, "0");
+  const end = `${dateStr}T${endHour}${event.time.slice(3, 5)}00`;
+
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: event.title,
+    dates: `${start}/${end}`,
+    location: event.location,
+    details: event.description ?? "",
+  });
+
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
 
 const EventDetail = () => {
   const { slug } = useParams<{ slug: string }>();
-  const event = slug ? getEventBySlug(slug) : undefined;
+  const [event, setEvent] = useState<Event | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!slug) return;
+    supabase
+      .from("events")
+      .select("*")
+      .eq("slug", slug)
+      .single()
+      .then(({ data }) => {
+        setEvent(data);
+        setLoading(false);
+      });
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 flex items-center justify-center pt-16">
+          <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+        </main>
+      </div>
+    );
+  }
 
   if (!event) {
     return (
@@ -16,10 +63,7 @@ const EventDetail = () => {
         <main className="flex-1 flex items-center justify-center pt-16">
           <div className="text-center space-y-4">
             <p className="text-muted-foreground">Evento não encontrado.</p>
-            <Link
-              to="/"
-              className="inline-flex items-center gap-2 text-accent hover:underline text-sm"
-            >
+            <Link to="/" className="inline-flex items-center gap-2 text-accent hover:underline text-sm">
               <ArrowLeft className="w-4 h-4" />
               Voltar ao início
             </Link>
@@ -48,50 +92,75 @@ const EventDetail = () => {
                 Voltar
               </Link>
 
-              {event.isPast && (
-                <span className="inline-block text-xs tracking-widest uppercase text-muted-foreground bg-muted px-3 py-1 rounded-full mb-4">
-                  Evento passado
-                </span>
-              )}
-
-              {!event.isPast && (
-                <span className="inline-block text-xs tracking-widest uppercase text-accent bg-accent/10 border border-accent/20 px-3 py-1 rounded-full mb-4">
-                  Próximo evento
-                </span>
-              )}
+              <span
+                className={`inline-block text-xs tracking-widest uppercase px-3 py-1 rounded-full mb-4 ${
+                  event.is_past
+                    ? "text-muted-foreground bg-muted"
+                    : "text-accent bg-accent/10 border border-accent/20"
+                }`}
+              >
+                {event.is_past ? "Evento passado" : "Próximo evento"}
+              </span>
 
               <h1 className="text-2xl md:text-3xl font-semibold text-foreground mb-8 leading-tight">
-                {event.location}
+                {event.title}
               </h1>
 
               <div className="space-y-4 text-muted-foreground mb-10">
                 <div className="flex items-center gap-3">
                   <CalendarDays className="w-4.5 h-4.5 text-accent shrink-0" />
-                  <span>{event.date}{event.time ? `, ${event.time}` : ""}</span>
+                  <span>
+                    {new Date(event.date).toLocaleDateString("pt-PT", {
+                      weekday: "long",
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                    , {event.time.slice(0, 5)}
+                  </span>
                 </div>
                 <div className="flex items-center gap-3">
                   <MapPin className="w-4.5 h-4.5 text-accent shrink-0" />
                   <span>{event.location}</span>
                 </div>
-                {event.walkInfo && (
+                {event.walk_info && (
                   <div className="flex items-center gap-3">
                     <Footprints className="w-4.5 h-4.5 text-accent shrink-0" />
-                    <span>{event.walkInfo}</span>
+                    <span>{event.walk_info}</span>
                   </div>
                 )}
               </div>
+
+              {event.flyer_url && (
+                <img
+                  src={event.flyer_url}
+                  alt={`Flyer ${event.title}`}
+                  className="w-full max-w-md rounded-xl border border-border mb-10"
+                />
+              )}
 
               {event.description && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
-                  className="prose prose-sm max-w-none"
+                  className="mb-10"
                 >
                   <p className="text-foreground/80 leading-relaxed text-base">
                     {event.description}
                   </p>
                 </motion.div>
+              )}
+
+              {!event.is_past && (
+                <a
+                  href={buildCalendarUrl(event)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block bg-accent text-accent-foreground px-8 py-3.5 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97]"
+                >
+                  Adicionar ao calendário
+                </a>
               )}
             </motion.div>
           </div>
