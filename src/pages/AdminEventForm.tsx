@@ -70,12 +70,19 @@ const AdminEventForm = () => {
     }
   };
 
+  const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
   const handleFlyerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (!ALLOWED_MIME.includes(file.type)) {
+      toast.error("Tipo de ficheiro não suportado. Usa JPG, PNG, GIF ou WebP.");
+      return;
+    }
+
     setUploading(true);
-    const ext = file.name.split(".").pop();
+    const ext = file.name.split(".").pop()?.toLowerCase();
     const path = `flyers/${Date.now()}.${ext}`;
 
     const { error } = await supabase.storage.from("media").upload(path, file);
