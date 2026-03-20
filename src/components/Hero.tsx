@@ -17,8 +17,8 @@ export const Hero = () => {
               <h1 className="text-foreground">
                 Meditar por um<br />mundo melhor
               </h1>
-              <p className="text-lg text-muted-foreground max-w-md leading-relaxed">
-                Evento mensal de meditação coletiva. Um espaço para respirar, juntos.
+              <p className="text-lg text-muted-foreground max-w-md leading-relaxed">Um espaço para parar, respirar e criar mudança, juntos.
+
               </p>
               <a
                 href="#proximo-evento"
