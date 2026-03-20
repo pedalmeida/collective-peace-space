@@ -7,6 +7,7 @@ import { Reveal } from "./Reveal";
 import { MagneticButton } from "./MagneticButton";
 import { FloatingDots } from "./FloatingDots";
 import { AnimatedImage } from "./AnimatedImage";
+import { BackgroundGradientAnimation } from "./ui/background-gradient-animation";
 
 export const Hero = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -21,6 +22,20 @@ export const Hero = () => {
 
   return (
     <section ref={sectionRef} className="section-padding pb-8 md:pb-12 relative overflow-hidden">
+      <BackgroundGradientAnimation
+        gradientBackgroundStart="hsl(50, 11%, 95%)"
+        gradientBackgroundEnd="hsl(50, 11%, 95%)"
+        firstColor="214, 180, 120"
+        secondColor="190, 170, 145"
+        thirdColor="210, 195, 170"
+        fourthColor="180, 155, 125"
+        fifthColor="225, 210, 175"
+        pointerColor="200, 170, 120"
+        size="60%"
+        blendingValue="soft-light"
+        interactive={true}
+        containerClassName="opacity-40"
+      />
       <FloatingDots />
       <div className="container relative z-10">
         <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
