@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
-import meditationGlobe from "@/assets/meditation-globe.jpg";
+import heroGlobe from "@/assets/hero-globe.jpg";
 import meditationGroup from "@/assets/meditation-group-real.jpg";
 import meditationCircle from "@/assets/meditation-circle-real.jpg";
 import { Reveal } from "./Reveal";
@@ -50,7 +50,7 @@ export const Hero = () => {
             <div className="grid grid-cols-5 grid-rows-4 gap-3 h-[420px] md:h-[480px]">
               <motion.div style={{ y: imgY1 }} className="col-span-2 row-span-4 rounded-xl overflow-hidden">
                 <AnimatedImage
-                  src={meditationGlobe}
+                  src={heroGlobe}
                   alt="Mão a segurar um globo terrestre durante meditação"
                   className="w-full h-full object-cover"
                   loading="eager"
