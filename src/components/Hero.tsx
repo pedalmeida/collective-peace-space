@@ -20,7 +20,7 @@ export const Hero = () => {
   const imgY3 = useTransform(scrollYProgress, [0, 1], [0, -80]);
 
   return (
-    <section ref={sectionRef} className="pt-12 md:pt-20 lg:section-padding pb-8 md:pb-12 relative">
+    <section ref={sectionRef} className="hidden lg:block pt-12 md:pt-20 lg:section-padding pb-8 md:pb-12 relative">
       <FloatingDots />
       <div className="container relative z-10">
         <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
