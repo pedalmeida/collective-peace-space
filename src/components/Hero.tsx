@@ -11,8 +11,8 @@ export const Hero = () => {
           {/* Text */}
           <Reveal>
             <div className="space-y-6">
-              <p className="text-sm tracking-widest uppercase text-muted-foreground">
-                Evento mensal · Lisboa
+              <p className="text-sm tracking-widest uppercase text-muted-foreground">EVENTO MENSAL DE MEDITAÇÃO COLETIVA
+
               </p>
               <h1 className="text-foreground">
                 Meditar por um<br />mundo melhor
@@ -22,8 +22,8 @@ export const Hero = () => {
               </p>
               <a
                 href="#proximo-evento"
-                className="inline-block bg-primary text-primary-foreground px-8 py-3.5 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97]"
-              >
+                className="inline-block bg-primary text-primary-foreground px-8 py-3.5 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97]">
+                
                 Junta-te ao próximo evento
               </a>
             </div>
@@ -37,27 +37,27 @@ export const Hero = () => {
                   src={meditationGlobe}
                   alt="Mão a segurar um globo terrestre durante meditação"
                   className="w-full h-full object-cover"
-                  loading="eager"
-                />
+                  loading="eager" />
+                
               </div>
               <div className="col-span-3 row-span-2 rounded-xl overflow-hidden">
                 <img
                   src={meditationGroup}
                   alt="Grupo de pessoas a meditar num parque"
-                  className="w-full h-full object-cover"
-                />
+                  className="w-full h-full object-cover" />
+                
               </div>
               <div className="col-span-3 row-span-2 rounded-xl overflow-hidden">
                 <img
                   src={meditationCircle}
                   alt="Círculo de meditação ao ar livre em Lisboa"
-                  className="w-full h-full object-cover"
-                />
+                  className="w-full h-full object-cover" />
+                
               </div>
             </div>
           </Reveal>
         </div>
       </div>
-    </section>
-  );
+    </section>);
+
 };
