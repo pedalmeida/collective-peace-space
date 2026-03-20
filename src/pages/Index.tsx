@@ -28,12 +28,12 @@ const Index = () => {
             size="60%"
             blendingValue="soft-light"
             interactive={true}
-            containerClassName="opacity-40 -translate-x-[20%]"
+            containerClassName="opacity-50 -translate-x-[20%]"
           />
           <Hero />
           <OrgTicker />
+          <NextEvent />
         </div>
-        <NextEvent />
         <About />
         <Mission />
         <Participate />
