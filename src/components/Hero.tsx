@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
-import meditationGlobe from "@/assets/meditation-globe.jpg";
+import heroGlobe from "@/assets/hero-globe.jpg";
 import meditationGroup from "@/assets/meditation-group-real.jpg";
 import meditationCircle from "@/assets/meditation-circle-real.jpg";
 import { Reveal } from "./Reveal";
