@@ -20,6 +20,7 @@ export const MagneticButton = ({
   type,
   onClick,
   strength = 0.3,
+  disabled,
 }: MagneticButtonProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
