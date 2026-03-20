@@ -6,7 +6,7 @@ export const Organizers = () => {
       <div className="container max-w-2xl text-center">
         <Reveal>
           <p className="text-sm tracking-widest uppercase text-accent font-medium mb-4">
-            Com o apoio de…
+            AJUDA-NOS A CRESCER
           </p>
           <h2 className="text-foreground mb-8">Queres fazer parte da organização?</h2>
           <div className="space-y-4 text-muted-foreground leading-relaxed mb-8">
