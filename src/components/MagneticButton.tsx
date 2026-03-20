@@ -9,6 +9,7 @@ interface MagneticButtonProps {
   type?: "button" | "submit";
   onClick?: () => void;
   strength?: number;
+  disabled?: boolean;
 }
 
 export const MagneticButton = ({
@@ -19,6 +20,7 @@ export const MagneticButton = ({
   type,
   onClick,
   strength = 0.3,
+  disabled,
 }: MagneticButtonProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
@@ -56,6 +58,7 @@ export const MagneticButton = ({
         href={as === "a" ? href : undefined}
         type={as === "button" ? type : undefined}
         onClick={onClick}
+        disabled={as === "button" ? disabled : undefined}
         className={className}
       >
         {children}
