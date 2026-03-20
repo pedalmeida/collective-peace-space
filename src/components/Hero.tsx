@@ -26,11 +26,13 @@ export const Hero = () => {
         <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
           <Reveal>
             <div className="space-y-6">
-              <p className="text-sm tracking-widest uppercase text-muted-foreground">
-                EVENTO MENSAL DE MEDITAÇÃO COLETIVA
+              <p className="text-sm tracking-widest uppercase text-accent font-medium">
+                ◆ EVENTO MENSAL DE MEDITAÇÃO COLETIVA
               </p>
-              <h1 className="text-foreground">
-                Meditar por um<br />mundo melhor
+              <h1 className="text-foreground text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight">
+                <span className="font-sans font-light">Meditar por um</span>
+                <br />
+                <span className="font-serif italic">mundo melhor.</span>
               </h1>
               <p className="text-lg text-muted-foreground max-w-md leading-relaxed">
                 Um espaço para parar, respirar e criar mudança, juntos.
