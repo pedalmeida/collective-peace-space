@@ -18,7 +18,7 @@ export const OrgTicker = () => {
 
   return (
     <section className="pt-3 pb-8 md:pt-4 md:pb-10 overflow-hidden border-b border-border/30">
-      <p className="text-xs tracking-[0.25em] uppercase text-muted-foreground text-center mb-8 md:mb-10">
+      <p className="text-xs tracking-[0.25em] uppercase text-muted-foreground text-center mb-12 md:mb-14">
         COM O APOIO DAS SEGUINTES ORGANIZAÇÕES:
       </p>
       <div className="relative">
