@@ -58,6 +58,7 @@ export const MagneticButton = ({
         href={as === "a" ? href : undefined}
         type={as === "button" ? type : undefined}
         onClick={onClick}
+        disabled={as === "button" ? disabled : undefined}
         className={className}
       >
         {children}
