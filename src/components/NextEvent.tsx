@@ -123,12 +123,7 @@ export const NextEvent = () => {
             />
           )}
 
-          <MagneticButton
-            href={buildCalendarUrl(event)}
-            className="inline-block bg-accent text-accent-foreground px-8 py-3.5 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97]"
-          >
-            Adicionar ao calendário
-          </MagneticButton>
+          <CalendarDropdown event={event} />
         </motion.div>
       </div>
     </section>

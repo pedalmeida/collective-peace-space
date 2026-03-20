@@ -136,16 +136,7 @@ const EventDetail = () => {
                 </motion.div>
               )}
 
-              {!event.is_past && (
-                <a
-                  href={buildCalendarUrl(event)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block bg-accent text-accent-foreground px-8 py-3.5 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97]"
-                >
-                  Adicionar ao calendário
-                </a>
-              )}
+              {!event.is_past && <CalendarDropdown event={event} />}
             </motion.div>
           </div>
         </section>
