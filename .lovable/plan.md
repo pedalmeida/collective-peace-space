@@ -1,42 +1,30 @@
 
 
-## Guardar emails de subscritores na base de dados
+## Fix Security Issues
 
-### O que muda
-O formulário "Receber informações dos eventos" passa a guardar o email na base de dados. Se o email já existir, mostra a mensagem "Já temos o teu email! Receberás as novidades." em vez de o inserir novamente.
+### 3 findings to address
 
-### Implementação
+**1. CRITICAL — Privilege escalation on `user_roles` (fix with migration)**
 
-**1. Criar tabela `subscribers` (migração)**
+Add an INSERT RLS policy that blocks all inserts (only allow via service role / direct DB access):
+
 ```sql
-CREATE TABLE public.subscribers (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  email text NOT NULL UNIQUE,
-  created_at timestamptz NOT NULL DEFAULT now()
-);
-
-ALTER TABLE public.subscribers ENABLE ROW LEVEL SECURITY;
-
--- Qualquer pessoa pode inserir (subscrever-se)
-CREATE POLICY "Anyone can subscribe"
-  ON public.subscribers FOR INSERT
-  TO public
-  WITH CHECK (true);
-
--- Admins podem ver todos os subscritores
-CREATE POLICY "Admins can view subscribers"
-  ON public.subscribers FOR SELECT
+CREATE POLICY "No public inserts on user_roles"
+  ON public.user_roles FOR INSERT
   TO authenticated
-  USING (has_role(auth.uid(), 'admin'::app_role));
+  WITH CHECK (false);
 ```
 
-Note: a tabela não expõe emails publicamente — apenas admins podem fazer SELECT.
+This prevents any authenticated user from self-assigning the admin role.
 
-**2. Actualizar `Participate.tsx`**
-- Importar `supabase` client
-- No `handleSubmit`: tentar inserir o email; se falhar com código de violação de unicidade (`23505`), mostrar mensagem "Já temos o teu email!"
-- Adicionar estado de loading e de "já existe"
-- Mensagem de sucesso: "Obrigado! Receberás notificações sobre os próximos eventos. 🪷"
-- Mensagem de duplicado: "Já temos o teu email! Receberás as novidades. 🪷"
-- Mensagem de erro genérico com toast
+**2. WARN — Permissive INSERT on `subscribers` (dismiss — intentional)**
+
+This is the public subscription form. Mark as ignored in the security scan with reason: "Intentional — public email subscription form requires unauthenticated inserts."
+
+**3. WARN — Leaked password protection disabled**
+
+Enable the HIBP (Have I Been Pwned) leaked password check via the auth configuration tool. This prevents users from signing up with known compromised passwords.
+
+### No code changes needed
+All fixes are database/config level — no application code changes required.
 
