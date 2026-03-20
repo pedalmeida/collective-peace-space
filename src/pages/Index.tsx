@@ -20,16 +20,16 @@ const Index = () => {
             <WavyBackground
               backgroundFill="#F5F5F2"
               colors={[
-                "rgba(230, 184, 106, 0.15)",
-                "rgba(46, 58, 89, 0.08)",
-                "rgba(210, 195, 170, 0.12)",
-                "rgba(180, 155, 125, 0.10)",
-                "rgba(225, 210, 175, 0.12)",
+                "rgba(230, 184, 106, 0.35)",
+                "rgba(46, 58, 89, 0.18)",
+                "rgba(210, 195, 170, 0.28)",
+                "rgba(180, 155, 125, 0.25)",
+                "rgba(225, 210, 175, 0.30)",
               ]}
-              waveWidth={80}
-              blur={40}
+              waveWidth={60}
+              blur={20}
               speed="slow"
-              waveOpacity={0.3}
+              waveOpacity={0.6}
               containerClassName="!h-full"
               className="hidden"
             />
