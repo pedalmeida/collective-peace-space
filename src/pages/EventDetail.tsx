@@ -86,14 +86,14 @@ const EventDetail = () => {
             >
               <Link
                 to="/#eventos"
-                className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors duration-200 text-sm mb-10 group"
+                className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors duration-200 text-sm mb-16 group"
               >
                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform duration-200" />
                 Voltar
               </Link>
 
               <span
-                className={`inline-block text-xs tracking-widest uppercase px-3 py-1 rounded-full mb-4 ${
+                className={`inline-block text-xs tracking-widest uppercase px-3 py-1 rounded-full mb-5 ${
                   event.is_past
                     ? "text-muted-foreground bg-muted"
                     : "text-accent bg-accent/10 border border-accent/20"
