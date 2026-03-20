@@ -111,16 +111,30 @@ export const FloatingNav = ({
         </span>
 
         {/* CTA (desktop) */}
-        {ctaLabel && pastHero && (
-          <>
-            <div className="hidden md:block h-5 w-px bg-border/60 mx-2" />
-            <a
-              href={ctaHref || "#"}
-              className="hidden md:block text-sm bg-primary text-primary-foreground px-4 py-1.5 rounded-lg hover:opacity-90 transition-all duration-200 active:scale-[0.97]"
-            >
-              {ctaLabel}
-            </a>
-          </>
+        {ctaLabel && (
+          <AnimatePresence>
+            {pastHero && (
+              <>
+                <motion.div
+                  initial={{ width: 0, opacity: 0 }}
+                  animate={{ width: "1px", opacity: 1 }}
+                  exit={{ width: 0, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="hidden md:block h-5 bg-border/60 mx-2 overflow-hidden"
+                />
+                <motion.a
+                  href={ctaHref || "#"}
+                  initial={{ width: 0, opacity: 0, paddingLeft: 0, paddingRight: 0 }}
+                  animate={{ width: "auto", opacity: 1, paddingLeft: 16, paddingRight: 16 }}
+                  exit={{ width: 0, opacity: 0, paddingLeft: 0, paddingRight: 0 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                  className="hidden md:block text-sm bg-primary text-primary-foreground py-1.5 rounded-lg hover:opacity-90 transition-opacity duration-200 active:scale-[0.97] overflow-hidden whitespace-nowrap"
+                >
+                  {ctaLabel}
+                </motion.a>
+              </>
+            )}
+          </AnimatePresence>
         )}
       </motion.div>
 
