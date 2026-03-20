@@ -34,7 +34,7 @@ export const Hero = () => {
         size="60%"
         blendingValue="soft-light"
         interactive={true}
-        containerClassName="opacity-40"
+        containerClassName="opacity-40 -translate-x-[20%]"
       />
       <FloatingDots />
       <div className="container relative z-10">
