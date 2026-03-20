@@ -8,28 +8,32 @@ import { Participate } from "@/components/Participate";
 import { PastEvents } from "@/components/PastEvents";
 import { Organizers } from "@/components/Organizers";
 import { Footer } from "@/components/Footer";
-import { BackgroundGradientAnimation } from "@/components/ui/background-gradient-animation";
+import { WavyBackground } from "@/components/ui/wavy-background";
 
 const Index = () => {
   return (
     <div className="min-h-screen">
       <Header />
       <main className="pt-16">
-        <div className="relative overflow-x-clip overflow-y-visible">
-          <BackgroundGradientAnimation
-            gradientBackgroundStart="hsl(50, 11%, 95%)"
-            gradientBackgroundEnd="hsl(50, 11%, 95%)"
-            firstColor="214, 180, 120"
-            secondColor="190, 170, 145"
-            thirdColor="210, 195, 170"
-            fourthColor="180, 155, 125"
-            fifthColor="225, 210, 175"
-            pointerColor="200, 170, 120"
-            size="60%"
-            blendingValue="soft-light"
-            interactive={true}
-            containerClassName="opacity-50 -translate-x-[20%]"
-          />
+        <div className="relative">
+          <div className="absolute inset-0 z-0 overflow-hidden">
+            <WavyBackground
+              backgroundFill="#F5F5F2"
+              colors={[
+                "rgba(230, 184, 106, 0.15)",
+                "rgba(46, 58, 89, 0.08)",
+                "rgba(210, 195, 170, 0.12)",
+                "rgba(180, 155, 125, 0.10)",
+                "rgba(225, 210, 175, 0.12)",
+              ]}
+              waveWidth={80}
+              blur={40}
+              speed="slow"
+              waveOpacity={0.3}
+              containerClassName="!h-full"
+              className="hidden"
+            />
+          </div>
           <Hero />
           <OrgTicker />
           <NextEvent />
