@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { ArrowLeft, MapPin, Footprints, Loader2 } from "lucide-react";
+import { ArrowLeft, CalendarDays, MapPin, Footprints, Loader2 } from "lucide-react";
 import { CalendarDropdown } from "@/components/CalendarDropdown";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
