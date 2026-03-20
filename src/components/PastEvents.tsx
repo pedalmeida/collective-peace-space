@@ -51,21 +51,25 @@ export const PastEvents = () => {
         >
           {pastEvents.map((event, i) => (
             <motion.div
-              key={i}
+              key={event.slug}
               custom={i}
               variants={itemVariants}
-              className="flex items-center justify-between p-5 rounded-xl bg-background border border-border hover:shadow-md transition-shadow duration-300 cursor-pointer group"
             >
-              <div>
-                <p className="text-foreground text-sm font-medium">{event.date}</p>
-                <div className="flex items-center gap-1.5 text-muted-foreground text-sm mt-1">
-                  <MapPin className="w-3.5 h-3.5" />
-                  <span>{event.location}</span>
+              <Link
+                to={`/evento/${event.slug}`}
+                className="flex items-center justify-between p-5 rounded-xl bg-background border border-border hover:shadow-md transition-shadow duration-300 cursor-pointer group"
+              >
+                <div>
+                  <p className="text-foreground text-sm font-medium">{event.date}</p>
+                  <div className="flex items-center gap-1.5 text-muted-foreground text-sm mt-1">
+                    <MapPin className="w-3.5 h-3.5" />
+                    <span>{event.location}</span>
+                  </div>
                 </div>
-              </div>
-              <span className="text-muted-foreground group-hover:text-accent transition-colors duration-200 text-sm">
-                Ver →
-              </span>
+                <span className="text-muted-foreground group-hover:text-accent transition-colors duration-200 text-sm">
+                  Ver →
+                </span>
+              </Link>
             </motion.div>
           ))}
         </motion.div>
