@@ -11,7 +11,7 @@ export const About = () => {
               <img
                   src={meditationGlobe}
                   alt="Mão a segurar um globo terrestre durante meditação"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-bottom"
               />
             </div>
           </Reveal>
