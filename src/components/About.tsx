@@ -1,5 +1,5 @@
 import { Reveal } from "./Reveal";
-import meditationHands from "@/assets/meditation-hands.jpg";
+import meditationGlobe from "@/assets/meditation-globe.jpg";
 
 export const About = () => {
   return (
