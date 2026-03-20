@@ -1,6 +1,6 @@
-import meditationGroup from "@/assets/meditation-group-1.jpg";
-import meditationPortrait from "@/assets/meditation-portrait.jpg";
-import meditationCircle from "@/assets/meditation-circle.jpg";
+import meditationGlobe from "@/assets/meditation-globe.jpg";
+import meditationGroup from "@/assets/meditation-group-real.jpg";
+import meditationCircle from "@/assets/meditation-circle-real.jpg";
 import { Reveal } from "./Reveal";
 
 export const Hero = () => {
