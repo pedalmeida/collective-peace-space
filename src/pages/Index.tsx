@@ -8,14 +8,31 @@ import { Participate } from "@/components/Participate";
 import { PastEvents } from "@/components/PastEvents";
 import { Organizers } from "@/components/Organizers";
 import { Footer } from "@/components/Footer";
+import { BackgroundGradientAnimation } from "@/components/ui/background-gradient-animation";
 
 const Index = () => {
   return (
     <div className="min-h-screen">
       <Header />
       <main className="pt-16">
-        <Hero />
-        <OrgTicker />
+        <div className="relative overflow-hidden">
+          <BackgroundGradientAnimation
+            gradientBackgroundStart="hsl(50, 11%, 95%)"
+            gradientBackgroundEnd="hsl(50, 11%, 95%)"
+            firstColor="214, 180, 120"
+            secondColor="190, 170, 145"
+            thirdColor="210, 195, 170"
+            fourthColor="180, 155, 125"
+            fifthColor="225, 210, 175"
+            pointerColor="200, 170, 120"
+            size="60%"
+            blendingValue="soft-light"
+            interactive={true}
+            containerClassName="opacity-40 -translate-x-[20%]"
+          />
+          <Hero />
+          <OrgTicker />
+        </div>
         <NextEvent />
         <About />
         <Mission />
