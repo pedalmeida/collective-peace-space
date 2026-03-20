@@ -1,5 +1,5 @@
 import { Reveal } from "./Reveal";
-import meditationHands from "@/assets/meditation-hands.jpg";
+import meditationGlobe from "@/assets/meditation-globe.jpg";
 
 export const About = () => {
   return (
@@ -9,8 +9,8 @@ export const About = () => {
           <Reveal>
             <div className="rounded-2xl overflow-hidden aspect-[4/3]">
               <img
-                src={meditationHands}
-                alt="Mãos em mudra de meditação"
+                  src={meditationGlobe}
+                  alt="Mão a segurar um globo terrestre durante meditação"
                 className="w-full h-full object-cover"
               />
             </div>
