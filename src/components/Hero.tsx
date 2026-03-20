@@ -26,7 +26,7 @@ export const Hero = () => {
         <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
           <Reveal>
             <div className="space-y-6">
-              <p className="text-sm tracking-widest uppercase text-accent font-medium">
+              <p className="text-sm tracking-widest uppercase text-accent-foreground/70 font-medium">
                 ◆ EVENTO MENSAL DE MEDITAÇÃO COLETIVA
               </p>
               <h1 className="text-foreground text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight">
