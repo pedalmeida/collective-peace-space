@@ -5,6 +5,11 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import EventDetail from "./pages/EventDetail.tsx";
+import AdminLogin from "./pages/AdminLogin.tsx";
+import AdminLayout from "./pages/AdminLayout.tsx";
+import AdminEvents from "./pages/AdminEvents.tsx";
+import AdminEventForm from "./pages/AdminEventForm.tsx";
+import AdminGallery from "./pages/AdminGallery.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -18,6 +23,12 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/evento/:slug" element={<EventDetail />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminEvents />} />
+            <Route path="eventos/:id" element={<AdminEventForm />} />
+            <Route path="galeria" element={<AdminGallery />} />
+          </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
