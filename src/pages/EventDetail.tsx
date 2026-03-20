@@ -86,7 +86,7 @@ const EventDetail = () => {
             >
               <Link
                 to="/#eventos"
-                className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors duration-200 text-sm mb-16 group"
+                className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors duration-200 text-sm mr-[50px] mb-16 group"
               >
                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform duration-200" />
                 Voltar
