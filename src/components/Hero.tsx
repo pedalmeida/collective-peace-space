@@ -7,6 +7,7 @@ import { Reveal } from "./Reveal";
 import { MagneticButton } from "./MagneticButton";
 import { FloatingDots } from "./FloatingDots";
 import { AnimatedImage } from "./AnimatedImage";
+import { BackgroundGradientAnimation } from "./ui/background-gradient-animation";
 
 export const Hero = () => {
   const sectionRef = useRef<HTMLElement>(null);
