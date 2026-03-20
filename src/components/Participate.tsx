@@ -1,19 +1,33 @@
-import { Reveal } from "./Reveal";
 import { MagneticButton } from "./MagneticButton";
 import { FloatingDots } from "./FloatingDots";
 import { TextReveal } from "./TextReveal";
-import { CalendarDays, MapPin } from "lucide-react";
+import { CalendarDays, MapPin, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { motion } from "motion/react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const Participate = () => {
   const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "duplicate">("idle");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
-      setSubmitted(true);
+    if (!email) return;
+
+    setStatus("loading");
+
+    const { error } = await supabase.from("subscribers").insert({ email: email.trim().toLowerCase() });
+
+    if (error) {
+      if (error.code === "23505") {
+        setStatus("duplicate");
+      } else {
+        setStatus("idle");
+        toast.error("Algo correu mal. Tenta novamente.");
+      }
+    } else {
+      setStatus("success");
     }
   };
 
@@ -60,13 +74,21 @@ export const Participate = () => {
             </div>
           </div>
 
-          {submitted ? (
+          {status === "success" ? (
             <motion.p
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               className="text-accent font-medium py-4"
             >
               Obrigado! Receberás notificações sobre os próximos eventos. 🪷
+            </motion.p>
+          ) : status === "duplicate" ? (
+            <motion.p
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-accent font-medium py-4"
+            >
+              Já temos o teu email! Receberás as novidades. 🪷
             </motion.p>
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
@@ -76,14 +98,23 @@ export const Participate = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="O teu email"
                 required
-                className="flex-1 px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
+                disabled={status === "loading"}
+                className="flex-1 px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50"
               />
               <MagneticButton
                 as="button"
                 type="submit"
-                className="bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97] whitespace-nowrap"
+                className="bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97] whitespace-nowrap disabled:opacity-50"
+                disabled={status === "loading"}
               >
-                Receber informações dos eventos
+                {status === "loading" ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    A enviar...
+                  </span>
+                ) : (
+                  "Receber informações dos eventos"
+                )}
               </MagneticButton>
             </form>
           )}
