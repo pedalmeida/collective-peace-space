@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const Participate = () => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "duplicate">("idle");
 
@@ -17,17 +18,25 @@ export const Participate = () => {
 
     setStatus("loading");
 
-    const { error } = await supabase.from("subscribers").insert({ email: email.trim().toLowerCase() });
+    try {
+      const { data, error } = await supabase.functions.invoke("add-subscriber", {
+        body: { name: name.trim(), email: email.trim().toLowerCase() },
+      });
 
-    if (error) {
-      if (error.code === "23505") {
-        setStatus("duplicate");
-      } else {
+      if (error) {
         setStatus("idle");
         toast.error("Algo correu mal. Tenta novamente.");
+        return;
       }
-    } else {
-      setStatus("success");
+
+      if (data?.duplicate) {
+        setStatus("duplicate");
+      } else {
+        setStatus("success");
+      }
+    } catch {
+      setStatus("idle");
+      toast.error("Algo correu mal. Tenta novamente.");
     }
   };
 
@@ -90,7 +99,15 @@ export const Participate = () => {
               Já temos o teu email! Receberás as novidades. 🪷
             </motion.p>
           ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-lg mx-auto">
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="O teu nome"
+                disabled={status === "loading"}
+                className="flex-1 px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50"
+              />
               <input
                 type="email"
                 value={email}
