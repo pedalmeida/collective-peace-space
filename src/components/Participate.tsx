@@ -90,7 +90,7 @@ export const Participate = () => {
               Já temos o teu email! Receberás as novidades. 🪷
             </motion.p>
           ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
               <input
                 type="email"
                 value={email}
