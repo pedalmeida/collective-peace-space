@@ -49,10 +49,11 @@ export const Participate = () => {
           </TextReveal>
           <div className="space-y-4 text-muted-foreground mb-10 leading-relaxed">
             <p>
-              Acreditamos que a meditação é uma ferramenta poderosa para cultivar paz interior,
-              empatia e universalismo — sementes de transformação individual e coletiva.
+              O próximo evento é a <span className="text-foreground font-medium">29 de março de 2026</span>.
             </p>
-            <p>Praticas ou tens interesse em meditação?</p>
+            <p>
+              Queres receber informação deste e de futuros eventos? Deixa o teu email e nós avisamos-te!
+            </p>
           </div>
         </motion.div>
 

@@ -1,12 +1,13 @@
 import { Navigate, Outlet, Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
-import { Loader2, CalendarDays, Image, LogOut, Home } from "lucide-react";
+import { Loader2, CalendarDays, Image, LogOut, Home, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "Eventos", path: "/admin", icon: CalendarDays },
   { label: "Galeria", path: "/admin/galeria", icon: Image },
+  { label: "Subscritores", path: "/admin/subscritores", icon: Users },
 ];
 
 const AdminLayout = () => {

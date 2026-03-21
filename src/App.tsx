@@ -10,6 +10,7 @@ import AdminLayout from "./pages/AdminLayout.tsx";
 import AdminEvents from "./pages/AdminEvents.tsx";
 import AdminEventForm from "./pages/AdminEventForm.tsx";
 import AdminGallery from "./pages/AdminGallery.tsx";
+import AdminSubscribers from "./pages/AdminSubscribers.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
             <Route index element={<AdminEvents />} />
             <Route path="eventos/:id" element={<AdminEventForm />} />
             <Route path="galeria" element={<AdminGallery />} />
+            <Route path="subscritores" element={<AdminSubscribers />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
