@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { motion, useInView } from "motion/react";
 import { useRef } from "react";
-import { CalendarDays, MapPin, Footprints, Loader2 } from "lucide-react";
+import { CalendarDays, MapPin, Footprints, Loader2, Share2 } from "lucide-react";
 import { CalendarDropdown } from "./CalendarDropdown";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
@@ -48,6 +48,25 @@ const AnimatedNumber = ({ value }: { value: number }) => {
 
 const EventCard = ({ event, index }: { event: Event; index: number }) => {
   const day = new Date(event.date).getDate();
+  const [shareFeedback, setShareFeedback] = useState(false);
+
+  const handleShare = useCallback(async () => {
+    const d = new Date(event.date + "T00:00:00");
+    const weekday = d.toLocaleDateString("pt-PT", { weekday: "long" });
+    const month = d.toLocaleDateString("pt-PT", { month: "long" });
+    const dayNum = d.getDate();
+    const time = event.time.slice(0, 5);
+
+    const msg = `🌿 Vou participar no evento "${event.title}" — meditação para um Mundo Melhor 🙏\n\n📅 ${weekday}, ${dayNum} de ${month} às ${time}\n📍 ${event.location}\n\nJunta-te a mim:\nhttps://meditarmundomelhor.org`;
+
+    if (navigator.share) {
+      try { await navigator.share({ text: msg }); } catch { /* cancelled */ }
+    } else {
+      await navigator.clipboard.writeText(msg);
+      setShareFeedback(true);
+      setTimeout(() => setShareFeedback(false), 2000);
+    }
+  }, [event]);
 
   return (
     <motion.div
@@ -102,8 +121,15 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
         </div>
       )}
 
-      <div className="mt-auto pt-5">
+      <div className="mt-auto pt-5 flex flex-col items-center gap-3">
         <CalendarDropdown event={event} />
+        <button
+          onClick={handleShare}
+          className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97]"
+        >
+          <Share2 className="w-4 h-4" />
+          {shareFeedback ? "Copiado! ✓" : "Partilhar o evento 🌍"}
+        </button>
       </div>
     </motion.div>
   );
