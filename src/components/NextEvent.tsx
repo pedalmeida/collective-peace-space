@@ -121,11 +121,11 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
         </div>
       )}
 
-      <div className="mt-auto pt-5 flex flex-col items-center gap-3">
-        <CalendarDropdown event={event} />
+      <div className="mt-auto pt-5 flex flex-col items-center gap-3 w-full">
+        <CalendarDropdown event={event} className="inline-flex items-center justify-center gap-2 bg-accent text-accent-foreground w-full py-3.5 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97]" />
         <button
           onClick={handleShare}
-          className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97]"
+          className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground w-full py-3.5 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97]"
         >
           <Share2 className="w-4 h-4" />
           {shareFeedback ? "Copiado! ✓" : "Partilhar o evento 🌍"}
