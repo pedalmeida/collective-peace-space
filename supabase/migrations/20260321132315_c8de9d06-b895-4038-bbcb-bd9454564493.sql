@@ -1,0 +1,1 @@
+ALTER TABLE public.subscribers ADD COLUMN IF NOT EXISTS name text;
