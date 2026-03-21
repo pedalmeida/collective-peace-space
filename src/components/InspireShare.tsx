@@ -161,7 +161,7 @@ export const InspireShare = () => {
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity duration-200">
               
               <Share2 className="w-4 h-4" />
-              Partilhar 🌍
+              Partilhar a inspiração com o mundo 🌍
             </button>
             
 
