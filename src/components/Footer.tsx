@@ -1,6 +1,6 @@
 export const Footer = () => {
   return (
-    <footer className="border-t border-border py-12">
+    <footer className="border-t border-border py-12 bg-destructive-foreground">
       <div className="container text-center space-y-4">
         <p className="font-serif text-lg text-foreground">Meditar por um Mundo Melhor</p>
         <p className="text-sm text-muted-foreground">
@@ -15,6 +15,6 @@ export const Footer = () => {
           © 2026 Meditar por um Mundo Melhor
         </p>
       </div>
-    </footer>
-  );
+    </footer>);
+
 };
