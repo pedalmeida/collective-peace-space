@@ -42,7 +42,7 @@ const OrganicLine = () => (
 
 /* ── Variant B — Aurora glow ── */
 const AuroraGlow = () => (
-  <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-20" aria-hidden>
+  <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-40 z-[2]" aria-hidden>
     <Aurora
       colorStops={["#E6B86A", "#8B9E6B", "#D4A855"]}
       amplitude={0.8}
