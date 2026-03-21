@@ -1,33 +1,29 @@
 
 
-## Hero — 3 versões visuais alternativas para avaliar
+## OrgTicker — Melhorias visuais + Backoffice de organizações
 
-Vou implementar as 3 opções como variantes alternáveis, controladas por uma prop ou estado, para poderes ver e escolher a que preferes. Depois removemos as que não ficarem.
+### 1. Ticker visual (OrgTicker.tsx)
+- **Mais devagar**: duração de 25s → 40s
+- **Logos mais juntos**: gap de `gap-16 md:gap-24` → `gap-10 md:gap-16`
+- **Ordem aleatória**: randomizar o array `organizations` com `useMemo` no mount (Fisher-Yates shuffle) — custo zero, executa uma vez por visita
 
----
+### 2. Links clicáveis
+- Adicionar campo `url` ao array de organizações (hardcoded por agora)
+- Envolver cada logo num `<a href={org.url} target="_blank" rel="noopener noreferrer">`
 
-### Versão A — Linha orgânica animada
+### 3. Backoffice de organizações (tabela + CRUD)
+- **Nova tabela `organizations`**: `id`, `name`, `logo_url`, `website_url`, `sort_order`, `is_active`, `created_at`
+- **RLS**: leitura pública (select), escrita apenas para admins via `has_role`
+- **Storage**: reutilizar bucket `media` para logos
+- **Nova página admin** `src/pages/AdminOrganizations.tsx`: listagem, criar/editar/eliminar orgs, upload de logo
+- **AdminLayout**: adicionar entrada "Organizações" na sidebar
+- **App.tsx**: nova rota `/admin/organizacoes`
+- **OrgTicker.tsx**: substituir dados hardcoded por query à tabela `organizations` (com fallback para os dados atuais enquanto carrega)
 
-Um SVG path curvo que se desenha lentamente atrás do texto do Hero, evocando uma onda de respiração. Usa `motion.path` com `pathLength` animado de 0 a 1, em loop suave. Cor dourada (`accent`) com opacidade baixa (~15%). Posicionado absolutamente atrás do bloco de texto.
-
-### Versão B — Aurora / gradiente vivo
-
-Reutiliza o componente `Aurora.tsx` já existente no projeto (baseado em OGL/WebGL), posicionado absolutamente no fundo do Hero com opacidade reduzida (~20-30%). Cores alinhadas com a paleta: tons dourados e verdes suaves. Ocupa toda a largura da secção, atrás de todo o conteúdo.
-
-### Versão C — Texto com highlight animado
-
-A palavra "mundo melhor" recebe um sublinhado/destaque dourado que se desenha da esquerda para a direita ao entrar em viewport. Implementado com `motion.span` usando `scaleX` de 0 a 1 com `origin-left`, posicionado como pseudo-elemento atrás do texto. Cor `accent` com ~25% opacidade.
-
----
-
-### Implementação técnica
-
-**Novo componente**: `src/components/HeroVisualVariant.tsx`
-- Recebe prop `variant: 'A' | 'B' | 'C'` para alternar entre versões
-- Exporta cada efeito como sub-componente
-
-**Ficheiros alterados**:
-- `src/components/Hero.tsx` — importa o novo componente e coloca-o no local adequado; adiciona estado temporário para alternar variante (removido depois da escolha)
-
-**Dependências**: Nenhuma nova — usa `motion/react` (já instalado) e `Aurora.tsx` (já existe).
+### Ficheiros alterados
+- `src/components/OrgTicker.tsx` — velocidade, gap, shuffle, query DB, links
+- `src/pages/AdminOrganizations.tsx` — novo
+- `src/pages/AdminLayout.tsx` — nova entrada nav
+- `src/App.tsx` — nova rota
+- Migration SQL — tabela `organizations` + RLS + seed com dados atuais
 
