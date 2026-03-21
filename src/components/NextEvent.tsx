@@ -55,13 +55,13 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
       whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: index * 0.15 }}
-      className="bg-card border border-border rounded-2xl p-8 md:p-10 text-center space-y-5 shadow-sm"
+      className="bg-card border border-border rounded-2xl p-8 md:p-10 text-center shadow-sm flex flex-col"
     >
       <h3 className="text-foreground text-2xl md:text-3xl font-semibold">
         <AnimatedNumber value={day} /> de{" "}
         {new Date(event.date).toLocaleDateString("pt-PT", { month: "long", year: "numeric" })}
       </h3>
-      <div className="space-y-2.5 text-muted-foreground text-sm">
+      <div className="space-y-2.5 text-muted-foreground text-sm mt-5">
         <div className="flex items-center justify-center gap-2">
           <CalendarDays className="w-4 h-4 shrink-0" />
           <span>
@@ -82,25 +82,29 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
       </div>
 
       {event.flyer_url && (
-        <Dialog>
-          <DialogTrigger asChild>
-            <img
-              src={event.flyer_url}
-              alt={`Flyer ${event.title}`}
-              className="w-full rounded-lg border border-border cursor-zoom-in hover:opacity-90 transition-opacity"
-            />
-          </DialogTrigger>
-          <DialogContent className="max-w-3xl p-2 bg-background/95 backdrop-blur-sm border-border">
-            <img
-              src={event.flyer_url}
-              alt={`Flyer ${event.title}`}
-              className="w-full rounded-lg"
-            />
-          </DialogContent>
-        </Dialog>
+        <div className="mt-5">
+          <Dialog>
+            <DialogTrigger asChild>
+              <img
+                src={event.flyer_url}
+                alt={`Flyer ${event.title}`}
+                className="w-full rounded-lg border border-border cursor-zoom-in hover:opacity-90 transition-opacity"
+              />
+            </DialogTrigger>
+            <DialogContent className="max-w-3xl p-2 bg-background/95 backdrop-blur-sm border-border">
+              <img
+                src={event.flyer_url}
+                alt={`Flyer ${event.title}`}
+                className="w-full rounded-lg"
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
       )}
 
-      <CalendarDropdown event={event} />
+      <div className="mt-auto pt-5">
+        <CalendarDropdown event={event} />
+      </div>
     </motion.div>
   );
 };
