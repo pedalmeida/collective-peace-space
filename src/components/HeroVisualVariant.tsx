@@ -6,7 +6,7 @@ export const OrganicLine = () => (
   <div className="absolute inset-0 pointer-events-none overflow-hidden z-[1]" aria-hidden>
     <svg
       viewBox="0 0 800 400"
-      className="absolute w-[120%] h-[60%] -left-[10%] bottom-0 opacity-20"
+      className="absolute w-[120%] h-[60%] -left-[10%] bottom-0 opacity-35"
       preserveAspectRatio="none"
     >
       <motion.path
