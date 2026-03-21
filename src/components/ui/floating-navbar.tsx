@@ -5,6 +5,7 @@ import {
   useScroll,
 } from "motion/react";
 import { cn } from "@/lib/utils";
+import { ArrowRight } from "lucide-react";
 
 export const FloatingNav = ({
   navItems,
@@ -122,9 +123,12 @@ export const FloatingNav = ({
             <div className="h-5 w-px bg-border/60 mx-2 shrink-0" />
             <a
               href={ctaHref || "#"}
-              className="text-sm bg-primary text-primary-foreground px-4 py-1.5 rounded-lg hover:opacity-90 transition-opacity duration-200 active:scale-[0.97] whitespace-nowrap shrink-0"
+              className="text-sm bg-primary text-primary-foreground px-4 py-1.5 rounded-lg hover:opacity-90 transition-opacity duration-200 active:scale-[0.97] whitespace-nowrap shrink-0 inline-flex items-center gap-1.5"
             >
               {ctaLabel}
+              <span className="inline-flex items-center justify-center w-4 h-4 bg-white/90 rounded-full">
+                <ArrowRight className="w-2.5 h-2.5 text-primary" />
+              </span>
             </a>
           </motion.div>
         )}
@@ -209,9 +213,12 @@ export const FloatingNav = ({
                       delay: 0.15 + navItems.length * 0.06,
                       ease: [0.16, 1, 0.3, 1],
                     }}
-                    className="block text-center text-sm bg-primary text-primary-foreground px-4 py-3 rounded-xl hover:opacity-90 transition-opacity duration-200 active:scale-[0.97] font-medium"
+                    className="flex items-center justify-center gap-2 text-sm bg-primary text-primary-foreground px-4 py-3 rounded-xl hover:opacity-90 transition-opacity duration-200 active:scale-[0.97] font-medium"
                   >
                     {ctaLabel}
+                    <span className="inline-flex items-center justify-center w-5 h-5 bg-white/90 rounded-full">
+                      <ArrowRight className="w-3 h-3 text-primary" />
+                    </span>
                   </motion.a>
                 </div>
               )}
