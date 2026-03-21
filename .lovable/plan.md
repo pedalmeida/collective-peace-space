@@ -1,30 +1,51 @@
 
 
-## Fix Security Issues
+## Subscritores para Google Sheets + Campo de Nome
 
-### 3 findings to address
+### Resumo
+Migrar o armazenamento de subscritores da base de dados para uma Google Spreadsheet e adicionar um campo "Nome" ao formulário e à spreadsheet.
 
-**1. CRITICAL — Privilege escalation on `user_roles` (fix with migration)**
+### Pré-requisitos (feitos por ti)
+1. Criar projeto no Google Cloud Console → ativar Google Sheets API
+2. Criar Service Account → download da chave JSON
+3. Criar Google Spreadsheet com cabeçalhos: **Nome | Email | Data**
+4. Partilhar a spreadsheet com o email da Service Account (Editor)
+5. Fornecer a chave JSON e o ID da spreadsheet ao Lovable (serão guardados como secrets)
 
-Add an INSERT RLS policy that blocks all inserts (only allow via service role / direct DB access):
+### Implementação
 
-```sql
-CREATE POLICY "No public inserts on user_roles"
-  ON public.user_roles FOR INSERT
-  TO authenticated
-  WITH CHECK (false);
-```
+**1. Guardar 2 secrets**
+- `GOOGLE_SERVICE_ACCOUNT_KEY` — JSON da service account
+- `GOOGLE_SHEET_ID` — ID da spreadsheet (extraído do URL)
 
-This prevents any authenticated user from self-assigning the admin role.
+**2. Criar edge function `add-subscriber`**
+- Recebe `{ name, email }` via POST
+- Autentica com Google Sheets API via JWT (Service Account)
+- Verifica duplicados (coluna Email)
+- Adiciona linha: Nome, Email, Data/Hora
+- Retorna sucesso, duplicado ou erro
 
-**2. WARN — Permissive INSERT on `subscribers` (dismiss — intentional)**
+**3. Criar edge function `list-subscribers`**
+- Lê todas as linhas da spreadsheet
+- Devolve array de `{ name, email, date }` para o backoffice
+- Requer autenticação de admin
 
-This is the public subscription form. Mark as ignored in the security scan with reason: "Intentional — public email subscription form requires unauthenticated inserts."
+**4. Atualizar `Participate.tsx`**
+- Adicionar campo "Nome" ao formulário (antes do email)
+- Substituir insert no Supabase por chamada à edge function `add-subscriber`
+- Manter feedback visual (sucesso, duplicado, erro)
 
-**3. WARN — Leaked password protection disabled**
+**5. Atualizar `AdminSubscribers.tsx`**
+- Puxar dados via edge function `list-subscribers` em vez da tabela
+- Adicionar coluna "Nome" à tabela do backoffice
+- Atualizar exportação CSV para incluir Nome
 
-Enable the HIBP (Have I Been Pwned) leaked password check via the auth configuration tool. This prevents users from signing up with known compromised passwords.
+**6. Migração DB: adicionar coluna `name` à tabela `subscribers`**
+- Manter a tabela como fallback durante a transição
+- `ALTER TABLE subscribers ADD COLUMN name text;`
 
-### No code changes needed
-All fixes are database/config level — no application code changes required.
+### Secção técnica
+- Autenticação Google: JWT assinado com Web Crypto API (Deno nativo, sem deps externas)
+- Detecção de duplicados: leitura da coluna B (Email) antes de inserir
+- CORS headers incluídos em ambas as edge functions
 
