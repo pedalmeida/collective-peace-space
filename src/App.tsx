@@ -11,6 +11,7 @@ import AdminEvents from "./pages/AdminEvents.tsx";
 import AdminEventForm from "./pages/AdminEventForm.tsx";
 import AdminGallery from "./pages/AdminGallery.tsx";
 import AdminSubscribers from "./pages/AdminSubscribers.tsx";
+import AdminUsers from "./pages/AdminUsers.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
