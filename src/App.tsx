@@ -31,6 +31,7 @@ const App = () => (
             <Route path="eventos/:id" element={<AdminEventForm />} />
             <Route path="galeria" element={<AdminGallery />} />
             <Route path="subscritores" element={<AdminSubscribers />} />
+            <Route path="utilizadores" element={<AdminUsers />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
