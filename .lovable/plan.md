@@ -1,29 +1,31 @@
 
 
-## OrgTicker — Melhorias visuais + Backoffice de organizações
+## Próximos Eventos — suporte a múltiplos eventos
 
-### 1. Ticker visual (OrgTicker.tsx)
-- **Mais devagar**: duração de 25s → 40s
-- **Logos mais juntos**: gap de `gap-16 md:gap-24` → `gap-10 md:gap-16`
-- **Ordem aleatória**: randomizar o array `organizations` com `useMemo` no mount (Fisher-Yates shuffle) — custo zero, executa uma vez por visita
+### O que muda
 
-### 2. Links clicáveis
-- Adicionar campo `url` ao array de organizações (hardcoded por agora)
-- Envolver cada logo num `<a href={org.url} target="_blank" rel="noopener noreferrer">`
+O componente `NextEvent` passa a carregar **todos** os eventos futuros (não apenas 1) e renderizá-los num layout responsivo.
 
-### 3. Backoffice de organizações (tabela + CRUD)
-- **Nova tabela `organizations`**: `id`, `name`, `logo_url`, `website_url`, `sort_order`, `is_active`, `created_at`
-- **RLS**: leitura pública (select), escrita apenas para admins via `has_role`
-- **Storage**: reutilizar bucket `media` para logos
-- **Nova página admin** `src/pages/AdminOrganizations.tsx`: listagem, criar/editar/eliminar orgs, upload de logo
-- **AdminLayout**: adicionar entrada "Organizações" na sidebar
-- **App.tsx**: nova rota `/admin/organizacoes`
-- **OrgTicker.tsx**: substituir dados hardcoded por query à tabela `organizations` (com fallback para os dados atuais enquanto carrega)
+### Novo evento a criar
+
+Adicionar via backoffice admin (ou migration seed): **26 Abril, 15:30, local a confirmar**.
+
+### Layout responsivo
+
+- **Mobile**: 1 coluna, cards empilhados verticalmente
+- **Tablet/Desktop**: grid de 2 colunas lado a lado (`grid grid-cols-1 md:grid-cols-2 gap-6`)
+- Cada card mantém o design atual (border, rounded-2xl, shadow-sm) mas com `max-w` removido para se adaptar ao grid
+- Título da secção muda para "Próximos eventos 📅"
 
 ### Ficheiros alterados
-- `src/components/OrgTicker.tsx` — velocidade, gap, shuffle, query DB, links
-- `src/pages/AdminOrganizations.tsx` — novo
-- `src/pages/AdminLayout.tsx` — nova entrada nav
-- `src/App.tsx` — nova rota
-- Migration SQL — tabela `organizations` + RLS + seed com dados atuais
+
+1. **`src/components/NextEvent.tsx`**
+   - Query: remover `.limit(1).single()`, usar `.select("*")` com array de resultados
+   - Estado: `events: Event[]` em vez de `event: Event | null`
+   - Título: "Próximos eventos" (plural)
+   - Layout: wrapper `grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto`
+   - Extrair card individual para sub-componente `EventCard` dentro do ficheiro
+   - Animação staggered: cada card com delay incremental
+
+2. **Migration SQL** — seed do novo evento (26 Abril 2025, 15:30, "Local a confirmar", slug `abril-2025`)
 
