@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { motion, useInView } from "motion/react";
 import { useRef } from "react";
 import { CalendarDays, MapPin, Footprints, Loader2 } from "lucide-react";
@@ -81,11 +82,22 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
       </div>
 
       {event.flyer_url && (
-        <img
-          src={event.flyer_url}
-          alt={`Flyer ${event.title}`}
-          className="w-full rounded-lg border border-border"
-        />
+        <Dialog>
+          <DialogTrigger asChild>
+            <img
+              src={event.flyer_url}
+              alt={`Flyer ${event.title}`}
+              className="w-full rounded-lg border border-border cursor-zoom-in hover:opacity-90 transition-opacity"
+            />
+          </DialogTrigger>
+          <DialogContent className="max-w-3xl p-2 bg-background/95 backdrop-blur-sm border-border">
+            <img
+              src={event.flyer_url}
+              alt={`Flyer ${event.title}`}
+              className="w-full rounded-lg"
+            />
+          </DialogContent>
+        </Dialog>
       )}
 
       <CalendarDropdown event={event} />
