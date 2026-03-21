@@ -75,6 +75,7 @@ export const Hero = () => {
                   src={meditationCircle}
                   alt="Círculo de meditação ao ar livre em Lisboa"
                   className="w-full h-full object-cover"
+                  loading="lazy"
                   delay={0.2} />
               </motion.div>
             </div>
