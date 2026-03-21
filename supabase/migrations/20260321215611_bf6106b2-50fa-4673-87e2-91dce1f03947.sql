@@ -1,0 +1,1 @@
+ALTER TABLE public.subscribers ADD COLUMN comments text, ADD COLUMN wants_to_organize boolean NOT NULL DEFAULT false;

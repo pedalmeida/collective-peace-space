@@ -71,7 +71,7 @@ Deno.serve(async (req) => {
       throw new Error("Google Sheets credentials not configured");
     }
 
-    const { name, email } = await req.json();
+    const { name, email, comments, wants_to_organize } = await req.json();
     if (!email) {
       return new Response(JSON.stringify({ error: "Email é obrigatório" }), {
         status: 400,
@@ -99,14 +99,22 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Append row
+    // Append row with 5 columns: Nome, Email, Data, Comentários, Quero Organizar
     const now = new Date().toLocaleString("pt-PT", { timeZone: "Europe/Lisbon" });
     const appendRes = await fetch(
-      `${baseUrl}/values/Sheet1!A:C:append?valueInputOption=USER_ENTERED`,
+      `${baseUrl}/values/Sheet1!A:E:append?valueInputOption=USER_ENTERED`,
       {
         method: "POST",
         headers,
-        body: JSON.stringify({ values: [[name || "", normalizedEmail, now]] }),
+        body: JSON.stringify({
+          values: [[
+            name || "",
+            normalizedEmail,
+            now,
+            comments || "",
+            wants_to_organize ? "Sim" : "Não",
+          ]],
+        }),
       }
     );
 
@@ -120,7 +128,12 @@ Deno.serve(async (req) => {
       const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
       const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
       const supabase = createClient(supabaseUrl, serviceRoleKey);
-      await supabase.from("subscribers").insert({ email: normalizedEmail, name: name || null });
+      await supabase.from("subscribers").insert({
+        email: normalizedEmail,
+        name: name || null,
+        comments: comments || null,
+        wants_to_organize: wants_to_organize || false,
+      });
     } catch (_) {
       // Non-critical - Google Sheets is the primary store
     }
