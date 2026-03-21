@@ -6,7 +6,7 @@ export const OrganicLine = () => (
   <div className="absolute inset-0 pointer-events-none overflow-hidden z-[1]" aria-hidden>
     <svg
       viewBox="0 0 800 400"
-      className="absolute w-[120%] h-[60%] -left-[10%] bottom-0 opacity-20"
+      className="absolute w-[120%] h-[60%] -left-[10%] bottom-0 opacity-35"
       preserveAspectRatio="none"
     >
       <motion.path
@@ -47,7 +47,7 @@ export const TextHighlight = () => {
   return (
     <span ref={ref} className="relative inline-block">
       <motion.span
-        className="absolute bottom-1 left-0 w-full h-[35%] bg-accent/20 rounded-sm -z-10 origin-left"
+        className="absolute bottom-1 left-0 w-full h-[35%] bg-accent/30 rounded-sm -z-10 origin-left"
         initial={{ scaleX: 0 }}
         animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
         transition={{ duration: 0.8, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
