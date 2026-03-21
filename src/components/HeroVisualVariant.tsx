@@ -45,14 +45,14 @@ export const TextHighlight = () => {
   const isInView = useInView(ref, { once: true, margin: "-50px" });
 
   return (
-    <span ref={ref} className="relative inline-block">mundo melhor.
+    <span ref={ref} className="relative inline-block">Mundo Melhor.
       <motion.span
         className="absolute bottom-1 left-0 w-full h-[35%] bg-accent/30 rounded-sm -z-10 origin-left"
         initial={{ scaleX: 0 }}
         animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
         transition={{ duration: 0.8, delay: 0.6, ease: [0.16, 1, 0.3, 1] }} />
       
-      mundo melhor.
+      Mundo Melhor.
     </span>);
 
 };
