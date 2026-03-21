@@ -41,7 +41,7 @@ export const Mission = () => {
           transition={{ duration: 0.5 }}
         >
           <p className="text-sm tracking-widest uppercase text-accent font-medium mb-4">
-            A nossa missão
+            A nossa missão 🌍
           </p>
           <TextReveal className="text-foreground mb-12" delay={0.1}>
             Um mundo construído…

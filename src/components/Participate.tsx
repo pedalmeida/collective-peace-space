@@ -51,7 +51,7 @@ export const Participate = () => {
           transition={{ duration: 0.5 }}
         >
           <p className="text-sm tracking-widest uppercase text-accent font-medium mb-4">
-            Como participar
+            Como participar 🪷
           </p>
           <TextReveal className="text-foreground mb-6" delay={0.1}>
             Junta-te a nós

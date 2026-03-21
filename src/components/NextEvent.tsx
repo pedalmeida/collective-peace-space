@@ -89,7 +89,7 @@ export const NextEvent = () => {
           className="bg-card border border-border rounded-2xl p-8 md:p-12 max-w-2xl mx-auto text-center space-y-6 shadow-sm"
         >
           <p className="text-sm tracking-widest uppercase text-accent font-medium">
-            Próximo evento
+            Próximo evento 📅
           </p>
           <h2 className="text-foreground">
             <AnimatedNumber value={day} /> de{" "}

@@ -55,7 +55,7 @@ export const PastEvents = () => {
           transition={{ duration: 0.5 }}
         >
           <p className="text-sm tracking-widest uppercase text-accent font-medium mb-4">
-            Eventos passados
+            Eventos passados 📸
           </p>
           <TextReveal className="text-foreground" delay={0.1}>
             Onde já estivemos
