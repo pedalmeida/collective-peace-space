@@ -63,18 +63,33 @@ export const FloatingNav = ({
 
   return (
     <>
-      {/* Floating pill navbar */}
+      {/* Mobile/Tablet: standalone hamburger button */}
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: visible ? 1 : 0 }}
+        transition={{ duration: 0.3 }}
+        onClick={() => setDrawerOpen(true)}
+        className="fixed top-4 right-4 z-[5000] lg:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-background/80 backdrop-blur-md border border-border/40 shadow-lg"
+        aria-label="Abrir menu"
+      >
+        <div className="flex flex-col gap-[4px]">
+          <span className="block w-5 h-[2px] bg-foreground rounded-full" />
+          <span className="block w-5 h-[2px] bg-foreground rounded-full" />
+          <span className="block w-5 h-[2px] bg-foreground rounded-full" />
+        </div>
+      </motion.button>
+
+      {/* Floating pill navbar (desktop only) */}
       <motion.div
         initial={{ opacity: 0, y: -100 }}
         animate={{ y: visible ? 0 : -100, opacity: visible ? 1 : 0 }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
         className={cn(
-          "fixed top-4 inset-x-0 mx-auto border border-border/40 rounded-2xl bg-background/80 backdrop-blur-md shadow-lg z-[5000] px-4 py-2.5 md:px-6 md:py-3 hidden lg:flex items-center justify-center gap-1 max-w-fit",
+          "fixed top-4 inset-x-0 mx-auto border border-border/40 rounded-2xl bg-background/80 backdrop-blur-md shadow-lg z-[5000] px-6 py-3 hidden lg:flex items-center justify-center gap-1 max-w-fit",
           className
         )}
       >
-        {/* Desktop nav */}
-        <nav className="hidden lg:flex items-center gap-1">
+        <nav className="flex items-center gap-1">
           {navItems.map((navItem, idx) => {
             const sectionId = navItem.link.replace("#", "");
             const isActive = activeSection === sectionId;
@@ -95,21 +110,10 @@ export const FloatingNav = ({
           })}
         </nav>
 
-        {/* Tablet & Mobile: hamburger toggle */}
-        <button
-          onClick={() => setDrawerOpen(true)}
-          className="lg:hidden flex flex-col gap-[4px] p-2 rounded-lg hover:bg-accent/30 transition-colors"
-          aria-label="Abrir menu"
-        >
-          <span className="block w-5 h-[2px] bg-foreground rounded-full" />
-          <span className="block w-5 h-[2px] bg-foreground rounded-full" />
-          <span className="block w-5 h-[2px] bg-foreground rounded-full" />
-        </button>
-
         {/* CTA (desktop) */}
         {ctaLabel && (
           <motion.div
-            className="hidden lg:flex items-center overflow-hidden"
+            className="flex items-center overflow-hidden"
             initial={false}
             animate={{
               maxWidth: pastHero ? 200 : 0,
