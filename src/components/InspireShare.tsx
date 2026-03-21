@@ -119,10 +119,10 @@ export const InspireShare = () => {
           whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-          className="bg-card border border-border rounded-2xl p-8 md:p-10 shadow-sm">
+          className="bg-card border border-border rounded-2xl p-8 md:p-10 shadow-sm my-0 py-[10px]">
           
           {/* Quote display */}
-          <div className="min-h-[120px] flex items-center justify-center mb-6 py-0">
+          <div className="min-h-[120px] flex items-center justify-center mb-6 py-0 my-0">
             <AnimatePresence mode="wait">
               <motion.blockquote
                 key={animKey}
@@ -156,11 +156,11 @@ export const InspireShare = () => {
           </motion.button>
 
           {/* Share buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="flex-col sm:flex-row gap-3 flex items-center justify-center py-0 my-0">
             <button
               id="share-btn"
               onClick={handleShare}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity duration-200">
+              className="inline-flex items-center gap-2 px-5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity duration-200 py-[10px] my-[60px]">
               
               <Share2 className="w-4 h-4" />
               Partilhar a inspiração com o mundo 🌍
