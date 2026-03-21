@@ -1,51 +1,79 @@
 
 
-## Subscritores para Google Sheets + Campo de Nome
+## Nova Secção: "Inspira-te e Partilha 🌿"
 
 ### Resumo
-Migrar o armazenamento de subscritores da base de dados para uma Google Spreadsheet e adicionar um campo "Nome" ao formulário e à spreadsheet.
+Criar uma secção interativa com citações inspiradoras, gerador aleatório, partilha social (nativo + WhatsApp), e gestão de citações no backoffice. Posicionada entre "Como participar" e "Eventos passados".
 
-### Pré-requisitos (feitos por ti)
-1. Criar projeto no Google Cloud Console → ativar Google Sheets API
-2. Criar Service Account → download da chave JSON
-3. Criar Google Spreadsheet com cabeçalhos: **Nome | Email | Data**
-4. Partilhar a spreadsheet com o email da Service Account (Editor)
-5. Fornecer a chave JSON e o ID da spreadsheet ao Lovable (serão guardados como secrets)
+---
 
-### Implementação
+### 1. Base de dados — nova tabela `quotes`
 
-**1. Guardar 2 secrets**
-- `GOOGLE_SERVICE_ACCOUNT_KEY` — JSON da service account
-- `GOOGLE_SHEET_ID` — ID da spreadsheet (extraído do URL)
+```sql
+CREATE TABLE public.quotes (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  text text NOT NULL,
+  author text,
+  is_active boolean NOT NULL DEFAULT true,
+  sort_order integer NOT NULL DEFAULT 0,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
 
-**2. Criar edge function `add-subscriber`**
-- Recebe `{ name, email }` via POST
-- Autentica com Google Sheets API via JWT (Service Account)
-- Verifica duplicados (coluna Email)
-- Adiciona linha: Nome, Email, Data/Hora
-- Retorna sucesso, duplicado ou erro
+ALTER TABLE public.quotes ENABLE ROW LEVEL SECURITY;
 
-**3. Criar edge function `list-subscribers`**
-- Lê todas as linhas da spreadsheet
-- Devolve array de `{ name, email, date }` para o backoffice
-- Requer autenticação de admin
+-- Qualquer pessoa pode ler citações ativas
+CREATE POLICY "Anyone can view active quotes" ON public.quotes
+  FOR SELECT TO public USING (is_active = true);
 
-**4. Atualizar `Participate.tsx`**
-- Adicionar campo "Nome" ao formulário (antes do email)
-- Substituir insert no Supabase por chamada à edge function `add-subscriber`
-- Manter feedback visual (sucesso, duplicado, erro)
+-- Admins gerem tudo
+CREATE POLICY "Admins can manage quotes" ON public.quotes
+  FOR ALL TO authenticated USING (has_role(auth.uid(), 'admin')) 
+  WITH CHECK (has_role(auth.uid(), 'admin'));
+```
 
-**5. Atualizar `AdminSubscribers.tsx`**
-- Puxar dados via edge function `list-subscribers` em vez da tabela
-- Adicionar coluna "Nome" à tabela do backoffice
-- Atualizar exportação CSV para incluir Nome
+Inserir ~10-15 citações iniciais sobre meditação, paz e mindfulness.
 
-**6. Migração DB: adicionar coluna `name` à tabela `subscribers`**
-- Manter a tabela como fallback durante a transição
-- `ALTER TABLE subscribers ADD COLUMN name text;`
+---
+
+### 2. Componente `InspireShare.tsx`
+
+- Busca citações ativas da tabela `quotes`
+- Estado local com citação atual (aleatória ao carregar)
+- Botão **"Inspira-me 🌿"** — seleciona nova citação aleatória com fade transition
+- Card central com tipografia elegante, fundo suave (gradiente subtil)
+- Dois botões de partilha:
+  - **"Partilhar 🌍"** — usa `navigator.share()` (mobile) com fallback para copiar link. Mensagem pré-preenchida com a citação + dados do próximo evento (dinâmicos da tabela `events`)
+  - **"Enviar a alguém 💌"** — abre WhatsApp (`https://wa.me/?text=...`) com mensagem pré-preenchida incluindo citação + dados do próximo evento
+- Busca o próximo evento (mesmo query do `NextEvent`) para preencher data/hora dinamicamente
+
+---
+
+### 3. Integração no Index.tsx
+
+Adicionar `<InspireShare />` entre `<Participate />` e `<PastEvents />`.
+
+---
+
+### 4. Backoffice — nova página `AdminQuotes.tsx`
+
+- CRUD de citações: listar, criar, editar, ativar/desativar
+- Tabela com colunas: Texto, Autor, Ativo, Ações
+- Formulário inline ou modal para adicionar/editar
+- Toggle de ativo/inativo
+
+---
+
+### 5. Routing e navegação
+
+- Nova rota `/admin/citacoes` no `App.tsx`
+- Novo item no sidebar do `AdminLayout.tsx` (icon: `Quote` ou `Sparkles`)
+
+---
 
 ### Secção técnica
-- Autenticação Google: JWT assinado com Web Crypto API (Deno nativo, sem deps externas)
-- Detecção de duplicados: leitura da coluna B (Email) antes de inserir
-- CORS headers incluídos em ambas as edge functions
+- Animação de troca de citação: `AnimatePresence` + `motion.div` com fade (já usado no projeto)
+- Partilha nativa: `navigator.share` API com fallback
+- WhatsApp: URL scheme `https://wa.me/?text=` com `encodeURIComponent`
+- Dados do próximo evento: query `events` onde `is_past = false`, ordenado por data, limit 1
+- Design: segue estética existente (off-white, accent dourado, tipografia editorial)
 
