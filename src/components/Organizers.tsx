@@ -2,7 +2,7 @@ import { Reveal } from "./Reveal";
 
 export const Organizers = () => {
   return (
-    <section id="organizadores" className="section-padding">
+    <section id="organizadores" className="section-padding py-[60px]">
       <div className="container max-w-2xl text-center">
         <Reveal>
           <p className="text-sm tracking-widest uppercase text-accent font-medium mb-4">
