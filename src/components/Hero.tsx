@@ -67,6 +67,7 @@ export const Hero = () => {
                   src={meditationGroup}
                   alt="Grupo de pessoas a meditar num parque"
                   className="w-full h-full object-cover"
+                  loading="lazy"
                   delay={0.1} />
               </motion.div>
               <motion.div style={{ y: imgY3 }} className="col-span-3 row-span-2 rounded-xl overflow-hidden">
