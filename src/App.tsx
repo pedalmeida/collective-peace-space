@@ -13,6 +13,7 @@ import AdminGallery from "./pages/AdminGallery.tsx";
 import AdminSubscribers from "./pages/AdminSubscribers.tsx";
 import AdminUsers from "./pages/AdminUsers.tsx";
 import AdminQuotes from "./pages/AdminQuotes.tsx";
+import AdminOrganizations from "./pages/AdminOrganizations.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
