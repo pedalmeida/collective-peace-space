@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { motion } from "motion/react";
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -61,7 +61,7 @@ export const OrgTicker = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dbOrgs]);
 
-  const items = [...organizations, ...organizations, ...organizations];
+  const items = [...organizations, ...organizations, ...organizations, ...organizations];
 
   return (
     <section className="pt-3 pb-8 md:pt-4 md:pb-10 overflow-hidden border-b border-border/30 relative z-10">
@@ -71,17 +71,9 @@ export const OrgTicker = () => {
       <div className="relative">
         <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-background to-transparent z-10" />
         <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-background to-transparent z-10" />
-        <motion.div
-          className="flex items-center gap-10 md:gap-16 whitespace-nowrap"
-          animate={{ x: ["0%", "-33.333%"] }}
-          transition={{
-            x: {
-              repeat: Infinity,
-              repeatType: "loop",
-              duration: 4.5,
-              ease: "linear",
-            },
-          }}
+        <div
+          className="flex items-center gap-10 md:gap-16 whitespace-nowrap animate-ticker"
+          style={{ width: "max-content" }}
         >
           {items.map((org, idx) => {
             const img = (
@@ -105,7 +97,7 @@ export const OrgTicker = () => {
               <span key={idx} className="shrink-0">{img}</span>
             );
           })}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
