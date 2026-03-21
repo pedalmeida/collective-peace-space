@@ -5,6 +5,7 @@ import {
   useScroll,
 } from "motion/react";
 import { cn } from "@/lib/utils";
+import { ArrowRight } from "lucide-react";
 
 export const FloatingNav = ({
   navItems,
