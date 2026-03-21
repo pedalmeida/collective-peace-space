@@ -48,7 +48,7 @@ export const PastEvents = () => {
     <section id="eventos" className="section-padding bg-card relative">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
 
-      <div className="container max-w-3xl mx-auto px-4">
+      <div className="container max-w-2xl mx-auto px-4">
         <motion.div
           className="text-center mb-12"
           initial={{ opacity: 0 }}
