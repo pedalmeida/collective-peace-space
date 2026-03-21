@@ -13,6 +13,7 @@ import AdminGallery from "./pages/AdminGallery.tsx";
 import AdminSubscribers from "./pages/AdminSubscribers.tsx";
 import AdminUsers from "./pages/AdminUsers.tsx";
 import AdminQuotes from "./pages/AdminQuotes.tsx";
+import AdminOrganizations from "./pages/AdminOrganizations.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="galeria" element={<AdminGallery />} />
             <Route path="subscritores" element={<AdminSubscribers />} />
             <Route path="utilizadores" element={<AdminUsers />} />
+            <Route path="organizacoes" element={<AdminOrganizations />} />
             <Route path="citacoes" element={<AdminQuotes />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
