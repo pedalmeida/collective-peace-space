@@ -114,3 +114,12 @@
 .reveal-delay-2 { animation-delay: 160ms; }
 .reveal-delay-3 { animation-delay: 240ms; }
 .reveal-delay-4 { animation-delay: 320ms; }
+
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-25%); }
+}
+
+.animate-ticker {
+  animation: ticker-scroll 8s linear infinite;
+}
