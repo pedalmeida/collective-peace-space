@@ -1,9 +1,9 @@
 import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import { motion, useScroll, useTransform } from "motion/react";
-import heroGlobe from "@/assets/hero-globe.jpg";
-import meditationGroup from "@/assets/meditation-group-real.jpg";
-import meditationCircle from "@/assets/meditation-circle-real.jpg";
+import heroGlobe from "@/assets/hero-globe.webp";
+import meditationGroup from "@/assets/meditation-group-real.webp";
+import meditationCircle from "@/assets/meditation-circle-real.webp";
 import { Reveal } from "./Reveal";
 import { MagneticButton } from "./MagneticButton";
 import { FloatingDots } from "./FloatingDots";
@@ -67,6 +67,7 @@ export const Hero = () => {
                   src={meditationGroup}
                   alt="Grupo de pessoas a meditar num parque"
                   className="w-full h-full object-cover"
+                  loading="lazy"
                   delay={0.1} />
               </motion.div>
               <motion.div style={{ y: imgY3 }} className="col-span-3 row-span-2 rounded-xl overflow-hidden">
@@ -74,6 +75,7 @@ export const Hero = () => {
                   src={meditationCircle}
                   alt="Círculo de meditação ao ar livre em Lisboa"
                   className="w-full h-full object-cover"
+                  loading="lazy"
                   delay={0.2} />
               </motion.div>
             </div>
