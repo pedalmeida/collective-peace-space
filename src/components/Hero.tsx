@@ -12,7 +12,7 @@ export const Hero = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ["start start", "end start"],
+    offset: ["start start", "end start"]
   });
 
   const imgY1 = useTransform(scrollYProgress, [0, 1], [0, -60]);
@@ -26,7 +26,7 @@ export const Hero = () => {
         <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
           <Reveal>
             <div className="space-y-6">
-              <span className="inline-block text-[0.8rem] tracking-widest uppercase text-accent-foreground font-medium bg-accent/20 border border-accent/30 rounded-full px-4 py-1.5">
+              <span className="inline-block text-[0.8rem] tracking-widest uppercase font-medium border-accent/30 rounded-full px-4 py-1.5 text-accent bg-destructive-foreground border-2">
                 ◆ EVENTO MENSAL DE MEDITAÇÃO COLETIVA
               </span>
               <h1 className="text-foreground text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight">
@@ -39,8 +39,8 @@ export const Hero = () => {
               </p>
               <MagneticButton
                 href="#proximo-evento"
-                className="inline-block bg-primary text-primary-foreground px-8 py-3.5 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97]"
-              >
+                className="inline-block bg-primary text-primary-foreground px-8 py-3.5 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97]">
+                
                 Junta-te ao próximo evento
               </MagneticButton>
             </div>
@@ -53,29 +53,29 @@ export const Hero = () => {
                   src={heroGlobe}
                   alt="Mão a segurar um globo terrestre durante meditação"
                   className="w-full h-full object-cover"
-                  loading="eager"
-                />
+                  loading="eager" />
+                
               </motion.div>
               <motion.div style={{ y: imgY2 }} className="col-span-3 row-span-2 rounded-xl overflow-hidden">
                 <AnimatedImage
                   src={meditationGroup}
                   alt="Grupo de pessoas a meditar num parque"
                   className="w-full h-full object-cover"
-                  delay={0.1}
-                />
+                  delay={0.1} />
+                
               </motion.div>
               <motion.div style={{ y: imgY3 }} className="col-span-3 row-span-2 rounded-xl overflow-hidden">
                 <AnimatedImage
                   src={meditationCircle}
                   alt="Círculo de meditação ao ar livre em Lisboa"
                   className="w-full h-full object-cover"
-                  delay={0.2}
-                />
+                  delay={0.2} />
+                
               </motion.div>
             </div>
           </Reveal>
         </div>
       </div>
-    </section>
-  );
+    </section>);
+
 };
