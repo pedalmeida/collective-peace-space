@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { motion, useInView } from "motion/react";
 import { useRef } from "react";
-import { CalendarDays, MapPin, Footprints, Loader2 } from "lucide-react";
+import { CalendarDays, MapPin, Footprints, Loader2, Share2 } from "lucide-react";
 import { CalendarDropdown } from "./CalendarDropdown";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
