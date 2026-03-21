@@ -98,9 +98,9 @@ export const PastEvents = () => {
                     </div>
                   )}
 
-                  <div className="p-3 space-y-1.5">
-                    <p className="text-foreground font-medium text-xs">{event.title}</p>
-                    <div className="flex flex-col gap-0.5 text-muted-foreground text-xs">
+                  <div className="p-4 space-y-2">
+                    <p className="text-foreground font-medium text-sm">{event.title}</p>
+                    <div className="flex flex-col gap-1 text-muted-foreground text-xs">
                       <div className="flex items-center gap-1.5">
                         <MapPin className="w-3.5 h-3.5 shrink-0" />
                         <span>{event.location}</span>
