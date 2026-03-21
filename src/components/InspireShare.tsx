@@ -97,7 +97,7 @@ export const InspireShare = () => {
   if (!current) return null;
 
   return (
-    <section className="section-padding relative overflow-hidden">
+    <section className="section-padding-sm relative overflow-hidden">
       <FloatingDots />
       <div className="container max-w-2xl text-center relative z-10">
         <motion.div
