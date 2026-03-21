@@ -72,7 +72,7 @@ export const PastEvents = () => {
           <p className="text-center text-muted-foreground text-sm py-10">Nenhum evento passado.</p>
         ) : (
           <motion.div
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center"
+            className="grid grid-cols-1 sm:grid-cols-2 gap-5"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.1 }}
