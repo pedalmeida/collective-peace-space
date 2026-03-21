@@ -123,9 +123,12 @@ export const FloatingNav = ({
             <div className="h-5 w-px bg-border/60 mx-2 shrink-0" />
             <a
               href={ctaHref || "#"}
-              className="text-sm bg-primary text-primary-foreground px-4 py-1.5 rounded-lg hover:opacity-90 transition-opacity duration-200 active:scale-[0.97] whitespace-nowrap shrink-0"
+              className="text-sm bg-primary text-primary-foreground px-4 py-1.5 rounded-lg hover:opacity-90 transition-opacity duration-200 active:scale-[0.97] whitespace-nowrap shrink-0 inline-flex items-center gap-1.5"
             >
               {ctaLabel}
+              <span className="inline-flex items-center justify-center w-4 h-4 bg-white/90 rounded-full">
+                <ArrowRight className="w-2.5 h-2.5 text-primary" />
+              </span>
             </a>
           </motion.div>
         )}
