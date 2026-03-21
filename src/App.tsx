@@ -29,6 +29,7 @@ const App = () => (
             <Route index element={<AdminEvents />} />
             <Route path="eventos/:id" element={<AdminEventForm />} />
             <Route path="galeria" element={<AdminGallery />} />
+            <Route path="subscritores" element={<AdminSubscribers />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { label: "Eventos", path: "/admin", icon: CalendarDays },
   { label: "Galeria", path: "/admin/galeria", icon: Image },
+  { label: "Subscritores", path: "/admin/subscritores", icon: Users },
 ];
 
 const AdminLayout = () => {
