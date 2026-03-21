@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { motion, useInView } from "motion/react";
 import { useRef } from "react";
 import { CalendarDays, MapPin, Footprints, Loader2 } from "lucide-react";
