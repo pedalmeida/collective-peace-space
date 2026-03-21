@@ -97,7 +97,7 @@ export const OrgTicker = () => {
               <span key={idx} className="shrink-0">{img}</span>
             );
           })}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
