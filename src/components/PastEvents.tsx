@@ -48,7 +48,7 @@ export const PastEvents = () => {
     <section id="eventos" className="section-padding bg-card relative">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
 
-      <div className="container max-w-4xl">
+      <div className="container max-w-3xl mx-auto px-4">
         <motion.div
           className="text-center mb-12"
           initial={{ opacity: 0 }}
@@ -72,13 +72,13 @@ export const PastEvents = () => {
           <p className="text-center text-muted-foreground text-sm py-10">Nenhum evento passado.</p>
         ) : (
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.1 }}
           >
             {events.map((event, i) => (
-              <motion.div key={event.id} custom={i} variants={cardVariants}>
+              <motion.div key={event.id} custom={i} variants={cardVariants} className="w-full max-w-[200px]">
                 <Link
                   to={`/evento/${event.slug}`}
                   className="block rounded-xl bg-background border border-border overflow-hidden group hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
@@ -98,9 +98,9 @@ export const PastEvents = () => {
                     </div>
                   )}
 
-                  <div className="p-4 space-y-2">
-                    <p className="text-foreground font-medium">{event.title}</p>
-                    <div className="flex flex-col gap-1 text-muted-foreground text-sm">
+                  <div className="p-3 space-y-1.5">
+                    <p className="text-foreground font-medium text-xs">{event.title}</p>
+                    <div className="flex flex-col gap-0.5 text-muted-foreground text-xs">
                       <div className="flex items-center gap-1.5">
                         <MapPin className="w-3.5 h-3.5 shrink-0" />
                         <span>{event.location}</span>
