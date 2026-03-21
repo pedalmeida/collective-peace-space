@@ -101,7 +101,7 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
       </div>
 
       {event.flyer_url && (
-        <div className="mt-5">
+        <div className="mt-5 flex-1 flex items-center">
           <Dialog>
             <DialogTrigger asChild>
               <img
