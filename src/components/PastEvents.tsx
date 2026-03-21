@@ -78,7 +78,7 @@ export const PastEvents = () => {
             viewport={{ once: true, amount: 0.1 }}
           >
             {events.map((event, i) => (
-              <motion.div key={event.id} custom={i} variants={cardVariants}>
+              <motion.div key={event.id} custom={i} variants={cardVariants} className="w-full max-w-[200px]">
                 <Link
                   to={`/evento/${event.slug}`}
                   className="block rounded-xl bg-background border border-border overflow-hidden group hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
