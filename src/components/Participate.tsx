@@ -10,6 +10,8 @@ import { toast } from "sonner";
 export const Participate = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [comments, setComments] = useState("");
+  const [wantsToOrganize, setWantsToOrganize] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "duplicate">("idle");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,7 +22,12 @@ export const Participate = () => {
 
     try {
       const { data, error } = await supabase.functions.invoke("add-subscriber", {
-        body: { name: name.trim(), email: email.trim().toLowerCase() }
+        body: {
+          name: name.trim(),
+          email: email.trim().toLowerCase(),
+          comments: comments.trim() || null,
+          wants_to_organize: wantsToOrganize,
+        }
       });
 
       if (error) {
@@ -82,60 +89,77 @@ export const Participate = () => {
             </div>
           </div>
 
-          {status === "success" ?
-          <motion.p
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-accent font-medium py-4">
-            
+          {status === "success" ? (
+            <motion.p
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-accent font-medium py-4">
               Obrigado! Receberás notificações sobre os próximos eventos. 🪷
-            </motion.p> :
-          status === "duplicate" ?
-          <motion.p
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-accent font-medium py-4">
-            
+            </motion.p>
+          ) : status === "duplicate" ? (
+            <motion.p
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-accent font-medium py-4">
               Já temos o teu email! Receberás as novidades. 🪷
-            </motion.p> :
-
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-lg mx-auto">
+            </motion.p>
+          ) : (
+            <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-lg mx-auto">
               <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="O teu nome"
-              disabled={status === "loading"}
-              className="flex-1 px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50" />
-            
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="O teu nome"
+                disabled={status === "loading"}
+                className="flex-1 px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50"
+              />
               <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="O teu email"
-              required
-              disabled={status === "loading"}
-              className="flex-1 px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50" />
-            
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="O teu email"
+                required
+                disabled={status === "loading"}
+                className="flex-1 px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50"
+              />
+              <textarea
+                value={comments}
+                onChange={(e) => setComments(e.target.value)}
+                placeholder="Algum comentário? (opcional)"
+                disabled={status === "loading"}
+                rows={3}
+                className="flex-1 px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50 resize-none"
+              />
+              <label className="flex items-start gap-3 text-left cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={wantsToOrganize}
+                  onChange={(e) => setWantsToOrganize(e.target.checked)}
+                  disabled={status === "loading"}
+                  className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-accent/50 disabled:opacity-50"
+                />
+                <span className="text-sm text-muted-foreground">
+                  Tenho interesse em ajudar a organizar eventos
+                </span>
+              </label>
               <MagneticButton
-              as="button"
-              type="submit"
-              className="bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97] whitespace-nowrap disabled:opacity-50"
-              disabled={status === "loading"}>
-              
-                {status === "loading" ?
-              <span className="flex items-center gap-2">
+                as="button"
+                type="submit"
+                className="bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97] whitespace-nowrap disabled:opacity-50"
+                disabled={status === "loading"}>
+                {status === "loading" ? (
+                  <span className="flex items-center gap-2">
                     <Loader2 className="w-4 h-4 animate-spin" />
                     A enviar...
-                  </span> :
-
-              "Receber informações dos eventos"
-              }
+                  </span>
+                ) : (
+                  "Receber informações dos eventos"
+                )}
               </MagneticButton>
             </form>
-          }
+          )}
         </motion.div>
       </div>
-    </section>);
-
+    </section>
+  );
 };

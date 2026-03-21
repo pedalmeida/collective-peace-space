@@ -153,22 +153,28 @@ export type Database = {
       }
       subscribers: {
         Row: {
+          comments: string | null
           created_at: string
           email: string
           id: string
           name: string | null
+          wants_to_organize: boolean
         }
         Insert: {
+          comments?: string | null
           created_at?: string
           email: string
           id?: string
           name?: string | null
+          wants_to_organize?: boolean
         }
         Update: {
+          comments?: string | null
           created_at?: string
           email?: string
           id?: string
           name?: string | null
+          wants_to_organize?: boolean
         }
         Relationships: []
       }
