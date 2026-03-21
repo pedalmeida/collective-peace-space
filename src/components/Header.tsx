@@ -10,7 +10,7 @@ export const Header = () => {
   return (
     <FloatingNav
       navItems={navItems}
-      ctaLabel="Junta-te"
+      ctaLabel="Junta-te a nós"
       ctaHref="#participar"
     />
   );
