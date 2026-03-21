@@ -61,6 +61,7 @@ export const Participate = () => {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
           className="bg-card border border-border rounded-2xl p-8 space-y-6 shadow-sm"
         >
+          <p className="text-sm tracking-widest uppercase text-accent font-medium">Próximo evento</p>
           <div className="flex flex-col items-center gap-2 text-muted-foreground text-sm">
             <div className="flex items-center gap-2">
               <CalendarDays className="w-4 h-4" />
