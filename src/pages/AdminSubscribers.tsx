@@ -3,16 +3,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Download, Loader2, Users } from "lucide-react";
-import type { Tables } from "@/integrations/supabase/types";
 
-type Subscriber = Tables<"subscribers">;
-
-const formatDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+type Subscriber = { name: string; email: string; date: string };
 
 const exportCSV = (rows: Subscriber[]) => {
-  const header = "Email,Data de subscrição\n";
-  const body = rows.map((r) => `${r.email},${formatDate(r.created_at)}`).join("\n");
+  const header = "Nome,Email,Data de subscrição\n";
+  const body = rows.map((r) => `"${r.name}","${r.email}","${r.date}"`).join("\n");
   const blob = new Blob([header + body], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -27,14 +23,18 @@ const AdminSubscribers = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase
-      .from("subscribers")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        setSubscribers(data ?? []);
+    const fetchSubscribers = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke("list-subscribers");
+        if (error) throw error;
+        setSubscribers(data?.subscribers ?? []);
+      } catch (e) {
+        console.error("Failed to load subscribers:", e);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+    fetchSubscribers();
   }, []);
 
   if (loading) {
@@ -68,15 +68,17 @@ const AdminSubscribers = () => {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Nome</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead className="w-48">Data de subscrição</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {subscribers.map((s) => (
-                <TableRow key={s.id}>
-                  <TableCell className="font-medium">{s.email}</TableCell>
-                  <TableCell className="text-muted-foreground">{formatDate(s.created_at)}</TableCell>
+              {subscribers.map((s, i) => (
+                <TableRow key={i}>
+                  <TableCell className="font-medium">{s.name || "—"}</TableCell>
+                  <TableCell>{s.email}</TableCell>
+                  <TableCell className="text-muted-foreground">{s.date}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
