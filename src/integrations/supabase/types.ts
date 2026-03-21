@@ -94,6 +94,33 @@ export type Database = {
           },
         ]
       }
+      quotes: {
+        Row: {
+          author: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          sort_order: number
+          text: string
+        }
+        Insert: {
+          author?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          sort_order?: number
+          text: string
+        }
+        Update: {
+          author?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          sort_order?: number
+          text?: string
+        }
+        Relationships: []
+      }
       subscribers: {
         Row: {
           created_at: string
