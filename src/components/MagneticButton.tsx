@@ -20,7 +20,7 @@ export const MagneticButton = ({
   type,
   onClick,
   strength = 0.3,
-  disabled,
+  disabled
 }: MagneticButtonProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
@@ -52,17 +52,17 @@ export const MagneticButton = ({
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={handleMouseLeave}
-      className="inline-block"
-    >
+      className="inline-block py-[30px]">
+      
       <Comp
         href={as === "a" ? href : undefined}
         type={as === "button" ? type : undefined}
         onClick={onClick}
         disabled={as === "button" ? disabled : undefined}
-        className={className}
-      >
+        className={className}>
+        
         {children}
       </Comp>
-    </motion.div>
-  );
+    </motion.div>);
+
 };
