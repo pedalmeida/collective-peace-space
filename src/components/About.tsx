@@ -5,7 +5,7 @@ import { AnimatedImage } from "./AnimatedImage";
 
 export const About = () => {
   return (
-    <section id="sobre" className="section-padding relative">
+    <section id="sobre" className="section-padding relative py-[60px]">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
 
       <div className="container">
@@ -14,16 +14,16 @@ export const About = () => {
             <AnimatedImage
               src={meditationGlobe}
               alt="Mão a segurar um globo terrestre durante meditação"
-              className="w-full h-full object-cover object-bottom"
-            />
+              className="w-full h-full object-cover object-bottom" />
+            
           </div>
           <motion.div
             initial={{ opacity: 0, x: 24, filter: "blur(4px)" }}
             whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] as [number, number, number, number], delay: 0.15 }}
-            className="space-y-6"
-          >
+            className="space-y-6">
+            
             <p className="text-sm tracking-widest uppercase text-accent font-medium">
               O que é o evento 🧘
             </p>
@@ -50,6 +50,6 @@ export const About = () => {
           </motion.div>
         </div>
       </div>
-    </section>
-  );
+    </section>);
+
 };
