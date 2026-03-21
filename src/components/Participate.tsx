@@ -49,10 +49,7 @@ export const Participate = () => {
           </TextReveal>
           <div className="space-y-4 text-muted-foreground mb-10 leading-relaxed">
             <p>
-              O próximo evento é a <span className="text-foreground font-medium">29 de março de 2026</span>.
-            </p>
-            <p>
-              Queres receber informação deste e de futuros eventos? Deixa o teu email e nós avisamos-te!
+              Queres receber informação sobre os próximos eventos? Deixa o teu email e nós avisamos-te!
             </p>
           </div>
         </motion.div>
@@ -64,6 +61,7 @@ export const Participate = () => {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
           className="bg-card border border-border rounded-2xl p-8 space-y-6 shadow-sm"
         >
+          <p className="text-sm tracking-widest uppercase text-accent font-medium">Próximo evento</p>
           <div className="flex flex-col items-center gap-2 text-muted-foreground text-sm">
             <div className="flex items-center gap-2">
               <CalendarDays className="w-4 h-4" />
@@ -92,7 +90,7 @@ export const Participate = () => {
               Já temos o teu email! Receberás as novidades. 🪷
             </motion.p>
           ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
               <input
                 type="email"
                 value={email}
