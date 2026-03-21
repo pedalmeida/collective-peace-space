@@ -49,10 +49,7 @@ export const Participate = () => {
           </TextReveal>
           <div className="space-y-4 text-muted-foreground mb-10 leading-relaxed">
             <p>
-              O próximo evento é a <span className="text-foreground font-medium">29 de março de 2026</span>.
-            </p>
-            <p>
-              Queres receber informação deste e de futuros eventos? Deixa o teu email e nós avisamos-te!
+              Queres receber informação sobre os próximos eventos? Deixa o teu email e nós avisamos-te!
             </p>
           </div>
         </motion.div>
