@@ -8,6 +8,7 @@ const navItems = [
   { label: "Eventos", path: "/admin", icon: CalendarDays },
   { label: "Galeria", path: "/admin/galeria", icon: Image },
   { label: "Subscritores", path: "/admin/subscritores", icon: Users },
+  { label: "Citações", path: "/admin/citacoes", icon: Sparkles },
   { label: "Admins", path: "/admin/utilizadores", icon: ShieldCheck },
 ];
 

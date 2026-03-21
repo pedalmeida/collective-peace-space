@@ -25,6 +25,7 @@ const Index = () => {
         <About />
         <Mission />
         <Participate />
+        <InspireShare />
         <PastEvents />
         <Organizers />
       </main>
