@@ -149,7 +149,7 @@ export const InspireShare = () => {
             onClick={nextQuote}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="group inline-flex items-center gap-2.5 px-6 rounded-full border-2 border-accent/30 bg-gradient-to-r from-accent/5 to-accent/15 text-accent text-sm font-semibold tracking-wide hover:border-accent/60 hover:shadow-lg hover:shadow-accent/10 transition-all duration-300 mb-6 py-[15px] my-0">
+            className="group inline-flex items-center gap-2.5 px-6 rounded-full border-2 border-accent/30 bg-gradient-to-r from-accent/5 to-accent/15 text-accent text-sm font-semibold tracking-wide hover:border-accent/60 hover:shadow-lg hover:shadow-accent/10 transition-all duration-300 mb-6 py-[15px] -mt-3">
             
             <RefreshCw className="w-4 h-4 transition-transform duration-500 group-hover:rotate-180" />
             Inspira-me 🌿
