@@ -4,7 +4,7 @@ export const Footer = () => {
       <div className="container text-center space-y-4">
         <p className="font-serif text-lg text-foreground">Meditar por um Mundo Melhor</p>
         <p className="text-sm text-muted-foreground">
-          Cada presença conta.
+          Cada presença conta ❤️✨  
         </p>
         <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
           <a href="mailto:info@meditarmundomelhor.org" className="hover:text-accent transition-colors duration-200">
