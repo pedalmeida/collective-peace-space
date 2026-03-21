@@ -14,7 +14,7 @@ const cardVariants = {
   hidden: (i: number) => ({
     opacity: 0,
     y: 30,
-    filter: "blur(4px)",
+    filter: "blur(4px)"
   }),
   visible: (i: number) => ({
     opacity: 1,
@@ -23,9 +23,9 @@ const cardVariants = {
     transition: {
       duration: 0.6,
       ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
-      delay: 0.1 + i * 0.1,
-    },
-  }),
+      delay: 0.1 + i * 0.1
+    }
+  })
 };
 
 export const PastEvents = () => {
@@ -33,19 +33,19 @@ export const PastEvents = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase
-      .from("events")
-      .select("*")
-      .eq("is_past", true)
-      .order("date", { ascending: false })
-      .then(({ data }) => {
-        setEvents(data ?? []);
-        setLoading(false);
-      });
+    supabase.
+    from("events").
+    select("*").
+    eq("is_past", true).
+    order("date", { ascending: false }).
+    then(({ data }) => {
+      setEvents(data ?? []);
+      setLoading(false);
+    });
   }, []);
 
   return (
-    <section id="eventos" className="section-padding bg-card relative">
+    <section id="eventos" className="section-padding bg-card relative py-[70px]">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
 
       <div className="container max-w-2xl mx-auto px-4">
@@ -54,8 +54,8 @@ export const PastEvents = () => {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.5 }}
-        >
+          transition={{ duration: 0.5 }}>
+          
           <p className="text-sm tracking-widest uppercase text-accent font-medium mb-4">
             Eventos passados 📸
           </p>
@@ -64,39 +64,39 @@ export const PastEvents = () => {
           </TextReveal>
         </motion.div>
 
-        {loading ? (
-          <div className="flex justify-center py-10">
+        {loading ?
+        <div className="flex justify-center py-10">
             <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-          </div>
-        ) : events.length === 0 ? (
-          <p className="text-center text-muted-foreground text-sm py-10">Nenhum evento passado.</p>
-        ) : (
-          <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 gap-5"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.1 }}
-          >
-            {events.map((event, i) => (
-              <motion.div key={event.id} custom={i} variants={cardVariants} className="w-full">
+          </div> :
+        events.length === 0 ?
+        <p className="text-center text-muted-foreground text-sm py-10">Nenhum evento passado.</p> :
+
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 gap-5"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}>
+          
+            {events.map((event, i) =>
+          <motion.div key={event.id} custom={i} variants={cardVariants} className="w-full">
                 <Link
-                  to={`/evento/${event.slug}`}
-                  className="block rounded-xl bg-background border border-border overflow-hidden group hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-                >
-                  {event.flyer_url ? (
-                    <div className="aspect-[3/4] overflow-hidden">
+              to={`/evento/${event.slug}`}
+              className="block rounded-xl bg-background border border-border overflow-hidden group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              
+                  {event.flyer_url ?
+              <div className="aspect-[3/4] overflow-hidden">
                       <img
-                        src={event.flyer_url}
-                        alt={event.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        loading="lazy"
-                      />
-                    </div>
-                  ) : (
-                    <div className="aspect-[3/4] bg-muted flex items-center justify-center">
+                  src={event.flyer_url}
+                  alt={event.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy" />
+                
+                    </div> :
+
+              <div className="aspect-[3/4] bg-muted flex items-center justify-center">
                       <ImageOff className="w-10 h-10 text-muted-foreground/40" />
                     </div>
-                  )}
+              }
 
                   <div className="p-4 space-y-2">
                     <p className="text-foreground font-medium text-sm">{event.title}</p>
@@ -115,10 +115,10 @@ export const PastEvents = () => {
                   </div>
                 </Link>
               </motion.div>
-            ))}
+          )}
           </motion.div>
-        )}
+        }
       </div>
-    </section>
-  );
+    </section>);
+
 };
