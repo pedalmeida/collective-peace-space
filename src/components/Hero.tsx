@@ -41,7 +41,7 @@ export const Hero = () => {
                 href="#proximo-evento"
                 className="inline-block bg-primary text-primary-foreground px-8 py-3.5 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97]">
                 
-                Junta-te ao próximo evento
+                Junta-te a nós
               </MagneticButton>
             </div>
           </Reveal>
