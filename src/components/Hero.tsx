@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { ArrowRight } from "lucide-react";
 import { motion, useScroll, useTransform } from "motion/react";
 import heroGlobe from "@/assets/hero-globe.jpg";
 import meditationGroup from "@/assets/meditation-group-real.jpg";
