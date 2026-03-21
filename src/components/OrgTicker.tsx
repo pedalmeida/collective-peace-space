@@ -78,7 +78,7 @@ export const OrgTicker = () => {
             x: {
               repeat: Infinity,
               repeatType: "loop",
-              duration: 10,
+              duration: 4.5,
               ease: "linear",
             },
           }}
