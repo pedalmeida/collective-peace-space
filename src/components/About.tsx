@@ -25,7 +25,7 @@ export const About = () => {
             className="space-y-6"
           >
             <p className="text-sm tracking-widest uppercase text-accent font-medium">
-              O que é o evento
+              O que é o evento 🧘
             </p>
             <TextReveal className="text-foreground" delay={0.2}>
               Meditar por um mundo melhor
