@@ -20,7 +20,7 @@ export const Participate = () => {
 
     try {
       const { data, error } = await supabase.functions.invoke("add-subscriber", {
-        body: { name: name.trim(), email: email.trim().toLowerCase() },
+        body: { name: name.trim(), email: email.trim().toLowerCase() }
       });
 
       if (error) {
@@ -41,15 +41,15 @@ export const Participate = () => {
   };
 
   return (
-    <section id="participar" className="section-padding relative overflow-hidden">
+    <section id="participar" className="section-padding relative overflow-hidden py-[60px]">
       <FloatingDots />
       <div className="container max-w-2xl text-center relative z-10">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.5 }}
-        >
+          transition={{ duration: 0.5 }}>
+          
           <p className="text-sm tracking-widest uppercase text-accent font-medium mb-4">
             Como participar 🪷
           </p>
@@ -68,8 +68,8 @@ export const Participate = () => {
           whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-          className="bg-card border border-border rounded-2xl p-8 space-y-6 shadow-sm"
-        >
+          className="bg-card border border-border rounded-2xl p-8 space-y-6 shadow-sm">
+          
           <p className="text-sm tracking-widest uppercase text-accent font-medium">Próximo evento</p>
           <div className="flex flex-col items-center gap-2 text-muted-foreground text-sm">
             <div className="flex items-center gap-2">
@@ -82,60 +82,60 @@ export const Participate = () => {
             </div>
           </div>
 
-          {status === "success" ? (
-            <motion.p
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-accent font-medium py-4"
-            >
+          {status === "success" ?
+          <motion.p
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-accent font-medium py-4">
+            
               Obrigado! Receberás notificações sobre os próximos eventos. 🪷
-            </motion.p>
-          ) : status === "duplicate" ? (
-            <motion.p
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-accent font-medium py-4"
-            >
+            </motion.p> :
+          status === "duplicate" ?
+          <motion.p
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-accent font-medium py-4">
+            
               Já temos o teu email! Receberás as novidades. 🪷
-            </motion.p>
-          ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-lg mx-auto">
+            </motion.p> :
+
+          <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-lg mx-auto">
               <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="O teu nome"
-                disabled={status === "loading"}
-                className="flex-1 px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50"
-              />
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="O teu nome"
+              disabled={status === "loading"}
+              className="flex-1 px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50" />
+            
               <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="O teu email"
-                required
-                disabled={status === "loading"}
-                className="flex-1 px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50"
-              />
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="O teu email"
+              required
+              disabled={status === "loading"}
+              className="flex-1 px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50" />
+            
               <MagneticButton
-                as="button"
-                type="submit"
-                className="bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97] whitespace-nowrap disabled:opacity-50"
-                disabled={status === "loading"}
-              >
-                {status === "loading" ? (
-                  <span className="flex items-center gap-2">
+              as="button"
+              type="submit"
+              className="bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97] whitespace-nowrap disabled:opacity-50"
+              disabled={status === "loading"}>
+              
+                {status === "loading" ?
+              <span className="flex items-center gap-2">
                     <Loader2 className="w-4 h-4 animate-spin" />
                     A enviar...
-                  </span>
-                ) : (
-                  "Receber informações dos eventos"
-                )}
+                  </span> :
+
+              "Receber informações dos eventos"
+              }
               </MagneticButton>
             </form>
-          )}
+          }
         </motion.div>
       </div>
-    </section>
-  );
+    </section>);
+
 };
