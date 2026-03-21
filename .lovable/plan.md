@@ -1,27 +1,40 @@
 
 
-## Otimizar carregamento das imagens do Hero
+## Adicionar campos "Comentários" e "Quero organizar" ao formulário de inscrição
 
-As 3 imagens do hero (`hero-globe.jpg`, `meditation-group-real.jpg`, `meditation-circle-real.jpg`) estão importadas como assets estáticos e são bundled pelo Vite, mas provavelmente são ficheiros grandes (fotos reais). O problema é que são carregadas tal como estão, sem otimização.
+### O que muda
 
-### Solução
+Dois novos campos opcionais no formulário de participação:
+1. **Textarea de comentários** — campo de texto livre, placeholder "Algum comentário? (opcional)"
+2. **Checkbox "Quero organizar"** — com label explicativo, tipo "Tenho interesse em ajudar a organizar eventos"
 
-1. **Comprimir e redimensionar as imagens** — as fotos do hero não precisam de resolução original. Redimensionar para ~800px de largura (a grid do hero tem no máximo ~480px de altura) e comprimir para qualidade 75-80%.
-
-2. **Preload da imagem principal** — adicionar `<link rel="preload">` no `index.html` para a primeira imagem (hero-globe), que é `loading="eager"`.
-
-3. **Lazy load nas imagens secundárias** — as duas imagens inferiores (`meditationGroup`, `meditationCircle`) já têm delay na animação, podem ter `loading="lazy"` explícito no `<img>`.
-
-4. **Formato WebP** — converter as 3 imagens para WebP (melhor compressão que JPG). Vite serve-as tal como estão, por isso basta substituir os ficheiros.
+Os dados são enviados para o Google Sheets (colunas adicionais) e guardados na tabela `subscribers` no backend.
 
 ### Ficheiros alterados
 
-- **`src/assets/`** — substituir as 3 imagens por versões otimizadas (WebP, ~800px largura, qualidade 80%)
-- **`src/components/Hero.tsx`** — adicionar `loading="lazy"` às duas imagens secundárias no `AnimatedImage`
-- **`src/components/AnimatedImage.tsx`** — garantir que `loading` prop é passada ao `<img>`
-- **`index.html`** — adicionar `<link rel="preload" as="image">` para a imagem principal do hero
+1. **Migration SQL** — adicionar colunas `comments text` e `wants_to_organize boolean default false` à tabela `subscribers`
 
-### Detalhe técnico
+2. **`src/components/Participate.tsx`**
+   - Novos estados: `comments` (string) e `wantsToOrganize` (boolean)
+   - Textarea de comentários entre o input de email e o botão submit
+   - Checkbox com label abaixo do textarea, alinhada à esquerda
+   - Passar os novos campos no body do `supabase.functions.invoke`
 
-A compressão será feita via script (`sharp` ou CLI) para reduzir o tamanho dos ficheiros de ~500KB+ para ~50-80KB cada, mantendo qualidade visual adequada para o tamanho de exibição.
+3. **`supabase/functions/add-subscriber/index.ts`**
+   - Extrair `comments` e `wants_to_organize` do body
+   - Expandir o append ao Google Sheets para 5 colunas: Nome, Email, Data, Comentários, Quero Organizar
+   - Incluir os campos no insert à tabela `subscribers`
+
+### Layout do formulário atualizado
+
+```text
+┌─────────────────────────┐
+│  [Nome]                 │
+│  [Email]                │
+│  [Comentários (textarea)]│
+│  ☐ Tenho interesse em   │
+│    ajudar a organizar   │
+│  [Receber informações]  │
+└─────────────────────────┘
+```
 
