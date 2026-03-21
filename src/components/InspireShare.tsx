@@ -28,15 +28,15 @@ export const InspireShare = () => {
   useEffect(() => {
     const fetchData = async () => {
       const [quotesRes, eventRes] = await Promise.all([
-        supabase.from("quotes").select("id, text, author").eq("is_active", true),
-        supabase
-          .from("events")
-          .select("date, time, title")
-          .eq("is_past", false)
-          .order("date", { ascending: true })
-          .limit(1)
-          .maybeSingle(),
-      ]);
+      supabase.from("quotes").select("id, text, author").eq("is_active", true),
+      supabase.
+      from("events").
+      select("date, time, title").
+      eq("is_past", false).
+      order("date", { ascending: true }).
+      limit(1).
+      maybeSingle()]
+      );
 
       if (quotesRes.data?.length) {
         setQuotes(quotesRes.data);
@@ -74,15 +74,15 @@ export const InspireShare = () => {
       try {
         await navigator.share({ text: msg });
       } catch {
-        /* user cancelled */
-      }
+
+        /* user cancelled */}
     } else {
       await navigator.clipboard.writeText(msg);
       // Simple feedback
       const btn = document.getElementById("share-btn");
       if (btn) {
         btn.textContent = "Copiado! ✓";
-        setTimeout(() => (btn.textContent = "Partilhar 🌍"), 2000);
+        setTimeout(() => btn.textContent = "Partilhar 🌍", 2000);
       }
     }
   };
@@ -104,8 +104,8 @@ export const InspireShare = () => {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.5 }}
-        >
+          transition={{ duration: 0.5 }}>
+          
           <p className="text-sm tracking-widest uppercase text-accent font-medium mb-4">
             Inspira-te e Partilha 🌿
           </p>
@@ -119,10 +119,10 @@ export const InspireShare = () => {
           whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-          className="bg-card border border-border rounded-2xl p-8 md:p-10 shadow-sm"
-        >
+          className="bg-card border border-border rounded-2xl p-8 md:p-10 shadow-sm">
+          
           {/* Quote display */}
-          <div className="min-h-[120px] flex items-center justify-center mb-6">
+          <div className="min-h-[120px] flex items-center justify-center mb-6 py-0">
             <AnimatePresence mode="wait">
               <motion.blockquote
                 key={animKey}
@@ -130,16 +130,16 @@ export const InspireShare = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.4, ease: "easeInOut" }}
-                className="text-center"
-              >
+                className="text-center">
+                
                 <p className="font-['Playfair_Display'] text-xl md:text-2xl text-foreground leading-relaxed italic">
                   "{current.text}"
                 </p>
-                {current.author && (
-                  <footer className="mt-3 text-sm text-muted-foreground">
+                {current.author &&
+                <footer className="mt-3 text-sm text-muted-foreground">
                     — {current.author}
                   </footer>
-                )}
+                }
               </motion.blockquote>
             </AnimatePresence>
           </div>
@@ -147,8 +147,8 @@ export const InspireShare = () => {
           {/* Inspire button */}
           <button
             onClick={nextQuote}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-accent/10 text-accent text-sm font-medium hover:bg-accent/20 transition-colors duration-200 mb-6"
-          >
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-accent/10 text-accent text-sm font-medium hover:bg-accent/20 transition-colors duration-200 mb-6">
+            
             <RefreshCw className="w-4 h-4" />
             Inspira-me 🌿
           </button>
@@ -158,21 +158,21 @@ export const InspireShare = () => {
             <button
               id="share-btn"
               onClick={handleShare}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity duration-200"
-            >
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity duration-200">
+              
               <Share2 className="w-4 h-4" />
               Partilhar 🌍
             </button>
-            <button
-              onClick={handleWhatsApp}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-border text-foreground text-sm font-medium hover:bg-muted/50 transition-colors duration-200"
-            >
-              <Send className="w-4 h-4" />
-              Enviar a alguém 💌
-            </button>
+            
+
+
+
+
+
+            
           </div>
         </motion.div>
       </div>
-    </section>
-  );
+    </section>);
+
 };
