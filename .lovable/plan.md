@@ -1,31 +1,39 @@
 
 
-## Próximos Eventos — suporte a múltiplos eventos
+## CTAs de partilha nos cards de Próximos Eventos
+
+Adicionar um botão "Partilhar o evento 🌍" a cada card de evento, com comportamento idêntico ao da secção InspireShare mas com a informação dinâmica de cada evento específico.
 
 ### O que muda
 
-O componente `NextEvent` passa a carregar **todos** os eventos futuros (não apenas 1) e renderizá-los num layout responsivo.
+**`src/components/NextEvent.tsx`** — no componente `EventCard`:
 
-### Novo evento a criar
+1. Adicionar botão de partilha abaixo do `CalendarDropdown`, dentro do bloco `mt-auto`
+2. Lógica de partilha por evento:
+   - **Share nativo** (mobile): `navigator.share({ text: msg })`
+   - **Fallback** (desktop): copia para clipboard com feedback "Copiado! ✓"
+3. Mensagem dinâmica por evento:
+   ```
+   🌿 Vou participar no evento "{event.title}" — meditação para um Mundo Melhor 🙏
 
-Adicionar via backoffice admin (ou migration seed): **26 Abril, 15:30, local a confirmar**.
+   📅 {dia da semana}, {dia} de {mês} às {hora}
+   📍 {local}
 
-### Layout responsivo
+   Junta-te a mim:
+   https://meditarmundomelhor.org
+   ```
+4. Estilo do botão: igual ao da secção InspireShare — `bg-primary text-primary-foreground`, com ícone `Share2`
 
-- **Mobile**: 1 coluna, cards empilhados verticalmente
-- **Tablet/Desktop**: grid de 2 colunas lado a lado (`grid grid-cols-1 md:grid-cols-2 gap-6`)
-- Cada card mantém o design atual (border, rounded-2xl, shadow-sm) mas com `max-w` removido para se adaptar ao grid
-- Título da secção muda para "Próximos eventos 📅"
+### Layout do bloco inferior de cada card
 
-### Ficheiros alterados
+```text
+┌─────────────────────┐
+│  ... conteúdo ...   │
+│                     │
+│  [Adicionar ao cal] │
+│  [Partilhar evento] │
+└─────────────────────┘
+```
 
-1. **`src/components/NextEvent.tsx`**
-   - Query: remover `.limit(1).single()`, usar `.select("*")` com array de resultados
-   - Estado: `events: Event[]` em vez de `event: Event | null`
-   - Título: "Próximos eventos" (plural)
-   - Layout: wrapper `grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto`
-   - Extrair card individual para sub-componente `EventCard` dentro do ficheiro
-   - Animação staggered: cada card com delay incremental
-
-2. **Migration SQL** — seed do novo evento (26 Abril 2025, 15:30, "Local a confirmar", slug `abril-2025`)
+Ambos os botões centrados, empilhados com `gap-3`.
 
