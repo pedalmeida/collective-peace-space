@@ -29,7 +29,7 @@ const cardVariants = {
 
 export const Mission = () => {
   return (
-    <section id="missao" className="section-padding bg-card relative py-[60px]">
+    <section id="missao" className="section-padding bg-card relative py-[50px]">
       {/* Gradient accent line top */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
 
