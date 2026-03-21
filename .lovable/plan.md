@@ -1,39 +1,27 @@
 
 
-## CTAs de partilha nos cards de Próximos Eventos
+## Otimizar carregamento das imagens do Hero
 
-Adicionar um botão "Partilhar o evento 🌍" a cada card de evento, com comportamento idêntico ao da secção InspireShare mas com a informação dinâmica de cada evento específico.
+As 3 imagens do hero (`hero-globe.jpg`, `meditation-group-real.jpg`, `meditation-circle-real.jpg`) estão importadas como assets estáticos e são bundled pelo Vite, mas provavelmente são ficheiros grandes (fotos reais). O problema é que são carregadas tal como estão, sem otimização.
 
-### O que muda
+### Solução
 
-**`src/components/NextEvent.tsx`** — no componente `EventCard`:
+1. **Comprimir e redimensionar as imagens** — as fotos do hero não precisam de resolução original. Redimensionar para ~800px de largura (a grid do hero tem no máximo ~480px de altura) e comprimir para qualidade 75-80%.
 
-1. Adicionar botão de partilha abaixo do `CalendarDropdown`, dentro do bloco `mt-auto`
-2. Lógica de partilha por evento:
-   - **Share nativo** (mobile): `navigator.share({ text: msg })`
-   - **Fallback** (desktop): copia para clipboard com feedback "Copiado! ✓"
-3. Mensagem dinâmica por evento:
-   ```
-   🌿 Vou participar no evento "{event.title}" — meditação para um Mundo Melhor 🙏
+2. **Preload da imagem principal** — adicionar `<link rel="preload">` no `index.html` para a primeira imagem (hero-globe), que é `loading="eager"`.
 
-   📅 {dia da semana}, {dia} de {mês} às {hora}
-   📍 {local}
+3. **Lazy load nas imagens secundárias** — as duas imagens inferiores (`meditationGroup`, `meditationCircle`) já têm delay na animação, podem ter `loading="lazy"` explícito no `<img>`.
 
-   Junta-te a mim:
-   https://meditarmundomelhor.org
-   ```
-4. Estilo do botão: igual ao da secção InspireShare — `bg-primary text-primary-foreground`, com ícone `Share2`
+4. **Formato WebP** — converter as 3 imagens para WebP (melhor compressão que JPG). Vite serve-as tal como estão, por isso basta substituir os ficheiros.
 
-### Layout do bloco inferior de cada card
+### Ficheiros alterados
 
-```text
-┌─────────────────────┐
-│  ... conteúdo ...   │
-│                     │
-│  [Adicionar ao cal] │
-│  [Partilhar evento] │
-└─────────────────────┘
-```
+- **`src/assets/`** — substituir as 3 imagens por versões otimizadas (WebP, ~800px largura, qualidade 80%)
+- **`src/components/Hero.tsx`** — adicionar `loading="lazy"` às duas imagens secundárias no `AnimatedImage`
+- **`src/components/AnimatedImage.tsx`** — garantir que `loading` prop é passada ao `<img>`
+- **`index.html`** — adicionar `<link rel="preload" as="image">` para a imagem principal do hero
 
-Ambos os botões centrados, empilhados com `gap-3`.
+### Detalhe técnico
+
+A compressão será feita via script (`sharp` ou CLI) para reduzir o tamanho dos ficheiros de ~500KB+ para ~50-80KB cada, mantendo qualidade visual adequada para o tamanho de exibição.
 
