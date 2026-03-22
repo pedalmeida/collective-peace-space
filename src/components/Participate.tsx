@@ -58,7 +58,7 @@ export const Participate = () => {
           transition={{ duration: 0.5 }}>
           
           <p className="text-sm tracking-widest uppercase text-accent font-medium mb-4">
-            Como participar 🪷
+            COMO PARTICIPAR 🪷
           </p>
           <TextReveal className="text-foreground mb-6" delay={0.1}>
             Junta-te a nós
@@ -67,7 +67,7 @@ export const Participate = () => {
             <p>Acreditamos na força da sinergia e da colaboração para construir este futuro.
 
 
-Queres receber informação sobre próximos eventos? Junta-te à Comunidade do WhatsApp ou deixa o teu e-mail.
+Queres receber informação sobre próximos eventos? Junta-te à Comunidade do WhatsApp ou contacta-nos.
 
             </p>
           </div>
@@ -77,7 +77,7 @@ Queres receber informação sobre próximos eventos? Junta-te à Comunidade do W
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
         className="bg-card border border-border rounded-2xl p-8 space-y-6 shadow-sm">
           
-          <p className="text-sm tracking-widest uppercase text-accent font-medium">Próximo evento</p>
+          <p className="text-sm tracking-widest uppercase text-accent font-medium">PRÓXIMO EVENTO</p>
           <div className="flex flex-col items-center gap-2 text-muted-foreground text-sm">
             <div className="flex items-center gap-2">
               <CalendarDays className="w-4 h-4" />
