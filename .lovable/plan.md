@@ -1,40 +1,31 @@
 
 
-## Adicionar campos "Comentários" e "Quero organizar" ao formulário de inscrição
+## Criar ficheiro `LESSONS_LEARNED.md` no repositório
 
-### O que muda
+Um único ficheiro Markdown na raiz do projeto com o report de lessons learned, organizado nas seguintes secções:
 
-Dois novos campos opcionais no formulário de participação:
-1. **Textarea de comentários** — campo de texto livre, placeholder "Algum comentário? (opcional)"
-2. **Checkbox "Quero organizar"** — com label explicativo, tipo "Tenho interesse em ajudar a organizar eventos"
+### Conteúdo do report
 
-Os dados são enviados para o Google Sheets (colunas adicionais) e guardados na tabela `subscribers` no backend.
+1. **Resumo do projeto** — stack, scope (landing page + admin panel + edge functions + Google Sheets integration)
 
-### Ficheiros alterados
+2. **Padrões que consumiram mais tokens** — baseado na análise do histórico:
+   - Iterações visuais incrementais (velocidade do ticker: 4 mensagens para acertar; espaçamento de CTAs: múltiplas tentativas)
+   - Retrabalho por falta de especificação inicial (animação CSS vs Framer Motion no ticker)
+   - Otimizações de performance feitas depois (imagens WebP deveriam ter sido feitas desde o início)
+   - Múltiplas migrações SQL incrementais (9 migrações quando podiam ser consolidadas)
 
-1. **Migration SQL** — adicionar colunas `comments text` e `wants_to_organize boolean default false` à tabela `subscribers`
+3. **Estratégias práticas para próximos projetos**:
+   - Dar contexto visual/referências no primeiro prompt (mockups, screenshots, exemplos)
+   - Especificar valores concretos (px, cores, durações) em vez de "mais rápido" / "mais lento"
+   - Agrupar mudanças visuais relacionadas num único prompt
+   - Planear schema da BD antes de começar (evitar migrações incrementais)
+   - Usar formatos otimizados (WebP) e lazy loading desde o início
+   - Usar Visual Edits para alterações de texto/cor em vez de prompts
+   - Descrever o comportamento esperado (ex: "loop contínuo sem salto") no primeiro pedido
 
-2. **`src/components/Participate.tsx`**
-   - Novos estados: `comments` (string) e `wantsToOrganize` (boolean)
-   - Textarea de comentários entre o input de email e o botão submit
-   - Checkbox com label abaixo do textarea, alinhada à esquerda
-   - Passar os novos campos no body do `supabase.functions.invoke`
+4. **Checklist pré-projeto** — lista rápida de decisões a tomar antes de começar a buildar
 
-3. **`supabase/functions/add-subscriber/index.ts`**
-   - Extrair `comments` e `wants_to_organize` do body
-   - Expandir o append ao Google Sheets para 5 colunas: Nome, Email, Data, Comentários, Quero Organizar
-   - Incluir os campos no insert à tabela `subscribers`
+### Ficheiro criado
 
-### Layout do formulário atualizado
-
-```text
-┌─────────────────────────┐
-│  [Nome]                 │
-│  [Email]                │
-│  [Comentários (textarea)]│
-│  ☐ Tenho interesse em   │
-│    ajudar a organizar   │
-│  [Receber informações]  │
-└─────────────────────────┘
-```
+- **`LESSONS_LEARNED.md`** — na raiz do projeto, ~150-200 linhas
 
