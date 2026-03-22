@@ -44,7 +44,7 @@ export const About = () => {
                 de universalismo — a consciência de que fazemos parte de uma mesma humanidade.
               </p>
               <p>
-                Assim, quando feita à escala, contribui para uma mudança positiva e coletiva no mundo.
+                Assim, quando nos juntamos a meditar, contribuimos para uma mudança positiva e coletiva no mundo.
               </p>
             </div>
           </motion.div>
