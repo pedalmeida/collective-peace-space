@@ -67,7 +67,7 @@ export const Participate = () => {
             <p>Acreditamos na força da sinergia e da colaboração para construir este futuro.
 
 
-Queres receber informação sobre próximos eventos? Junta-te à Comunidade do WhatsApp ou deixa o teu e-mail.
+Queres receber informação sobre próximos eventos? Junta-te à Comunidade do WhatsApp ou contacta-nos.
 
             </p>
           </div>
