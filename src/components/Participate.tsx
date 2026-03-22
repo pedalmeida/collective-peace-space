@@ -142,20 +142,19 @@ export const Participate = () => {
                   Tenho interesse em ajudar a organizar eventos
                 </span>
               </label>
-              <MagneticButton
-                as="button"
+              <button
                 type="submit"
-                className="bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97] whitespace-nowrap disabled:opacity-50"
+                className="w-full bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97] whitespace-nowrap disabled:opacity-50"
                 disabled={status === "loading"}>
                 {status === "loading" ? (
-                  <span className="flex items-center gap-2">
+                  <span className="flex items-center justify-center gap-2">
                     <Loader2 className="w-4 h-4 animate-spin" />
                     A enviar...
                   </span>
                 ) : (
                   "Receber informações dos eventos"
                 )}
-              </MagneticButton>
+              </button>
             </form>
           )}
         </motion.div>
