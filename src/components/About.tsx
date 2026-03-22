@@ -43,13 +43,13 @@ export const About = () => {
                 Com a prática regular, desperta-se uma maior empatia pelos outros e um sentimento
                 de universalismo — a consciência de que fazemos parte de uma mesma humanidade.
               </p>
-              <p>
-                Assim, contribuimos para uma transformação positiva e coletiva no mundo.
+              <p>Assim, contribuimos para uma transformação positiva e coletiva no mundo.
+
+
+
               </p>
             </div>
           </motion.div>
         </div>
       </div>
-    </section>);
-
-};
+    </section>);};
