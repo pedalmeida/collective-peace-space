@@ -1,31 +1,51 @@
 
 
-## Criar ficheiro `LESSONS_LEARNED.md` no repositório
+## Reestruturar secção "Como Participar"
 
-Um único ficheiro Markdown na raiz do projeto com o report de lessons learned, organizado nas seguintes secções:
+### Resumo
 
-### Conteúdo do report
+Reorganizar a secção para: (1) CTA do WhatsApp destacado em primeiro lugar, (2) formulário de email em segundo, (3) remover info do próximo evento.
 
-1. **Resumo do projeto** — stack, scope (landing page + admin panel + edge functions + Google Sheets integration)
+### Layout final
 
-2. **Padrões que consumiram mais tokens** — baseado na análise do histórico:
-   - Iterações visuais incrementais (velocidade do ticker: 4 mensagens para acertar; espaçamento de CTAs: múltiplas tentativas)
-   - Retrabalho por falta de especificação inicial (animação CSS vs Framer Motion no ticker)
-   - Otimizações de performance feitas depois (imagens WebP deveriam ter sido feitas desde o início)
-   - Múltiplas migrações SQL incrementais (9 migrações quando podiam ser consolidadas)
+```text
+┌─────────────────────────────────┐
+│  COMO PARTICIPAR 🪷             │
+│  Junta-te a nós                │
+│  (texto introdutório)          │
+└─────────────────────────────────┘
 
-3. **Estratégias práticas para próximos projetos**:
-   - Dar contexto visual/referências no primeiro prompt (mockups, screenshots, exemplos)
-   - Especificar valores concretos (px, cores, durações) em vez de "mais rápido" / "mais lento"
-   - Agrupar mudanças visuais relacionadas num único prompt
-   - Planear schema da BD antes de começar (evitar migrações incrementais)
-   - Usar formatos otimizados (WebP) e lazy loading desde o início
-   - Usar Visual Edits para alterações de texto/cor em vez de prompts
-   - Descrever o comportamento esperado (ex: "loop contínuo sem salto") no primeiro pedido
+┌─────────────────────────────────┐  ← módulo 1: fundo branco, destaque
+│  🟢 COMUNIDADE WHATSAPP        │
+│  Texto convidativo curto        │
+│  [ Entrar na Comunidade ▸ ]    │  ← botão grande, verde WhatsApp
+└─────────────────────────────────┘
 
-4. **Checklist pré-projeto** — lista rápida de decisões a tomar antes de começar a buildar
+  "ou, se preferires, deixa o     
+   teu email:"                    ← texto separador
 
-### Ficheiro criado
+┌─────────────────────────────────┐  ← módulo 2: card atual (sem próximo evento)
+│  [Nome]                         │
+│  [Email]                        │
+│  [Comentários]                  │
+│  ☐ Quero organizar              │
+│  [Receber informações]          │
+└─────────────────────────────────┘
+```
 
-- **`LESSONS_LEARNED.md`** — na raiz do projeto, ~150-200 linhas
+### Alterações em `src/components/Participate.tsx`
+
+1. **Remover** o bloco "PRÓXIMO EVENTO" (linhas 80-90: título, data, local)
+2. **Remover** imports não usados (`CalendarDays`, `MapPin`)
+3. **Mover e transformar** a secção WhatsApp (atualmente no fundo, linhas 162-183) para **antes** do formulário, como um card destacado:
+   - Fundo `bg-white` (ou `bg-card`), border, `rounded-2xl`, `p-8`
+   - Ícone WhatsApp maior (w-6 h-6)
+   - Botão maior com fundo verde `bg-[#25D366]` texto branco, `py-3 px-8`
+   - Texto: "Junta-te à nossa comunidade WhatsApp para acompanhar novidades e próximos eventos"
+4. **Adicionar texto separador** entre os dois módulos: "Ou, se preferires, deixa o teu email para receber notificações"
+5. O formulário de email mantém-se no segundo card, sem a info do próximo evento
+
+### Ficheiro alterado
+
+- `src/components/Participate.tsx` — único ficheiro
 
