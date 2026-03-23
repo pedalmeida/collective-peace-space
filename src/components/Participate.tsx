@@ -64,12 +64,6 @@ export const Participate = () => {
           </TextReveal>
           <div className="space-y-4 text-muted-foreground mb-10 leading-relaxed">
             <p>Acreditamos na força da sinergia e da colaboração para construir este futuro. Queres receber informação sobre próximos eventos?
-
-            
-
-          <p className="text-sm tracking-widest uppercase text-accent font-medium">SUBSCRIÇÃO POR E-MAIL</p>
-
-
             </p>
           </div>
         </motion.div>
