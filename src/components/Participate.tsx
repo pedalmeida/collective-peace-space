@@ -171,10 +171,9 @@ export const Participate = () => {
                 </span>
               </label>
 
-              <div className="pt-[15px]">
               <button
               type="submit"
-              className="w-full bg-primary text-primary-foreground px-6 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97] whitespace-nowrap disabled:opacity-50 py-[12px]"
+              className="w-full bg-primary text-primary-foreground px-6 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97] whitespace-nowrap disabled:opacity-50 py-[12px] mt-[15px]"
               disabled={status === "loading"}>
                 {status === "loading" ?
               <span className="flex items-center justify-center gap-2">
