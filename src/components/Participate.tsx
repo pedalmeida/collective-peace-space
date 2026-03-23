@@ -64,10 +64,6 @@ export const Participate = () => {
           </TextReveal>
           <div className="space-y-4 text-muted-foreground mb-10 leading-relaxed">
             <p>Acreditamos na força da sinergia e da colaboração para construir este futuro. Queres receber informação sobre próximos eventos?
-
-            
-
-
             </p>
           </div>
         </motion.div>
@@ -118,6 +114,7 @@ export const Participate = () => {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.35 }}
           className="bg-card border border-border rounded-2xl p-8 space-y-6 shadow-sm">
 
+          <p className="text-sm tracking-widest uppercase text-accent font-medium">SUBSCRIÇÃO POR E-MAIL</p>
           {status === "success" ?
           <motion.p
             initial={{ opacity: 0, scale: 0.95 }}
