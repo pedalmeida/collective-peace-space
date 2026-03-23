@@ -67,6 +67,8 @@ export const Participate = () => {
 
             
 
+          <p className="text-sm tracking-widest uppercase text-accent font-medium">SUBSCRIÇÃO POR E-MAIL</p>
+
 
             </p>
           </div>
