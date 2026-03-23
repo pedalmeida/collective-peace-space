@@ -63,10 +63,10 @@ export const Participate = () => {
             Junta-te a nós
           </TextReveal>
           <div className="space-y-4 text-muted-foreground mb-10 leading-relaxed">
-            <p>Acreditamos na força da sinergia e da colaboração para construir este futuro.
+            <p>Acreditamos na força da sinergia e da colaboração para construir este futuro. Queres receber informação sobre próximos eventos?
 
+            
 
-Queres receber informação sobre próximos eventos? Junta-te à Comunidade do WhatsApp ou contacta-nos.
 
             </p>
           </div>
@@ -118,76 +118,76 @@ Queres receber informação sobre próximos eventos? Junta-te à Comunidade do W
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.35 }}
           className="bg-card border border-border rounded-2xl p-8 space-y-6 shadow-sm">
 
-          {status === "success" ? (
-            <motion.p
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-accent font-medium py-4">
+          {status === "success" ?
+          <motion.p
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-accent font-medium py-4">
               Obrigado! Receberás notificações sobre os próximos eventos. 🪷
-            </motion.p>
-          ) : status === "duplicate" ? (
-            <motion.p
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-accent font-medium py-4">
+            </motion.p> :
+          status === "duplicate" ?
+          <motion.p
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-accent font-medium py-4">
               Já temos o teu email! Receberás as novidades. 🪷
-            </motion.p>
-          ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-lg mx-auto">
+            </motion.p> :
+
+          <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-lg mx-auto">
               <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="O teu nome"
-                disabled={status === "loading"}
-                className="flex-1 px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50" />
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="O teu nome"
+              disabled={status === "loading"}
+              className="flex-1 px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50" />
 
               <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="O teu email"
-                required
-                disabled={status === "loading"}
-                className="flex-1 px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50" />
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="O teu email"
+              required
+              disabled={status === "loading"}
+              className="flex-1 px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50" />
 
               <textarea
-                value={comments}
-                onChange={(e) => setComments(e.target.value)}
-                placeholder="Algum comentário? (opcional)"
-                disabled={status === "loading"}
-                rows={3}
-                className="flex-1 px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50 resize-none" />
+              value={comments}
+              onChange={(e) => setComments(e.target.value)}
+              placeholder="Algum comentário? (opcional)"
+              disabled={status === "loading"}
+              rows={3}
+              className="flex-1 px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50 resize-none" />
 
               <label className="flex items-start gap-3 text-left cursor-pointer select-none">
                 <input
-                  type="checkbox"
-                  checked={wantsToOrganize}
-                  onChange={(e) => setWantsToOrganize(e.target.checked)}
-                  disabled={status === "loading"}
-                  className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-accent/50 disabled:opacity-50" />
+                type="checkbox"
+                checked={wantsToOrganize}
+                onChange={(e) => setWantsToOrganize(e.target.checked)}
+                disabled={status === "loading"}
+                className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-accent/50 disabled:opacity-50" />
                 <span className="text-sm text-muted-foreground">
                   Tenho interesse em ajudar a organizar eventos
                 </span>
               </label>
 
               <button
-                type="submit"
-                className="w-full bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97] whitespace-nowrap disabled:opacity-50"
-                disabled={status === "loading"}>
-                {status === "loading" ? (
-                  <span className="flex items-center justify-center gap-2">
+              type="submit"
+              className="w-full bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97] whitespace-nowrap disabled:opacity-50"
+              disabled={status === "loading"}>
+                {status === "loading" ?
+              <span className="flex items-center justify-center gap-2">
                     <Loader2 className="w-4 h-4 animate-spin" />
                     A enviar...
-                  </span>
-                ) : (
-                  "Receber informações dos eventos"
-                )}
+                  </span> :
+
+              "Receber informações dos eventos"
+              }
               </button>
             </form>
-          )}
+          }
         </motion.div>
       </div>
-    </section>
-  );
+    </section>);
+
 };
