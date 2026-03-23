@@ -95,7 +95,7 @@ export const Participate = () => {
             href="https://chat.whatsapp.com/F8bensGlhy8EHGsQpS4I2u"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 bg-[#25D366] text-white font-medium text-sm rounded-lg py-3 px-8 hover:bg-[#20bd5a] transition-colors duration-200 active:scale-[0.97]">
+            className="inline-flex items-center justify-center gap-2 text-white font-medium text-sm rounded-lg py-3 px-8 transition-colors duration-200 active:scale-[0.97] bg-accent">
             Entrar na Comunidade
           </a>
         </motion.div>
@@ -173,7 +173,7 @@ export const Participate = () => {
 
               <button
               type="submit"
-              className="w-full bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97] whitespace-nowrap disabled:opacity-50"
+              className="w-full bg-primary text-primary-foreground px-6 rounded-lg text-sm tracking-wide hover:opacity-90 transition-opacity duration-200 active:scale-[0.97] whitespace-nowrap disabled:opacity-50 py-[12px]"
               disabled={status === "loading"}>
                 {status === "loading" ?
               <span className="flex items-center justify-center gap-2">
