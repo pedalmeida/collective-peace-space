@@ -16,7 +16,10 @@ Deno.serve(async (req) => {
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
     // Verify caller is admin
-    const authHeader = req.headers.get("Authorization")!;
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Não autenticado" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
     const token = authHeader.replace("Bearer ", "");
     const { data: { user: caller } } = await supabaseAdmin.auth.getUser(token);
     if (!caller) {
@@ -41,18 +44,21 @@ Deno.serve(async (req) => {
     });
 
     if (createError) {
-      return new Response(JSON.stringify({ error: createError.message }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      console.error("create-admin createUser error:", createError.message);
+      return new Response(JSON.stringify({ error: "Não foi possível criar o utilizador." }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     // Assign admin role
     const { error: roleError } = await supabaseAdmin.from("user_roles").insert({ user_id: newUser.user.id, role: "admin" });
 
     if (roleError) {
-      return new Response(JSON.stringify({ error: roleError.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      console.error("create-admin roleInsert error:", roleError.message);
+      return new Response(JSON.stringify({ error: "Utilizador criado mas ocorreu um erro ao atribuir permissões." }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     return new Response(JSON.stringify({ success: true, user_id: newUser.user.id }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    console.error("create-admin error:", e);
+    return new Response(JSON.stringify({ error: "Ocorreu um erro interno." }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 });

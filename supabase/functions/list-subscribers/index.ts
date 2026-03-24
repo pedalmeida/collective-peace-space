@@ -126,7 +126,7 @@ Deno.serve(async (req) => {
     });
   } catch (e) {
     console.error("list-subscribers error:", e);
-    return new Response(JSON.stringify({ error: e.message }), {
+    return new Response(JSON.stringify({ error: "Ocorreu um erro ao carregar subscritores." }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
