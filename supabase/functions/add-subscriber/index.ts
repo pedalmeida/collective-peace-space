@@ -5,6 +5,22 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Simple in-memory rate limiter (resets on cold start, but effective against bursts)
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT_MAX = 5;
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return false;
+  }
+  entry.count++;
+  return entry.count > RATE_LIMIT_MAX;
+}
+
 // Google Sheets JWT auth helpers
 async function getAccessToken(serviceAccountKey: string): Promise<string> {
   const sa = JSON.parse(serviceAccountKey);
@@ -20,7 +36,6 @@ async function getAccessToken(serviceAccountKey: string): Promise<string> {
 
   const signInput = `${header}.${payload}`;
 
-  // Import the private key
   const pemBody = sa.private_key
     .replace(/-----BEGIN PRIVATE KEY-----/, "")
     .replace(/-----END PRIVATE KEY-----/, "")
@@ -65,15 +80,32 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Rate limiting by IP
+    const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      req.headers.get("cf-connecting-ip") || "unknown";
+    if (isRateLimited(clientIp)) {
+      return new Response(JSON.stringify({ error: "Demasiados pedidos. Tenta novamente mais tarde." }), {
+        status: 429,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const serviceAccountKey = Deno.env.get("GOOGLE_SERVICE_ACCOUNT_KEY");
     const sheetId = Deno.env.get("GOOGLE_SHEET_ID");
     if (!serviceAccountKey || !sheetId) {
       throw new Error("Google Sheets credentials not configured");
     }
 
-    const { name, email, comments, wants_to_organize } = await req.json();
-    if (!email) {
-      return new Response(JSON.stringify({ error: "Email é obrigatório" }), {
+    const body = await req.json();
+    const name = typeof body.name === "string" ? body.name.trim().slice(0, 100) : "";
+    const email = typeof body.email === "string" ? body.email.trim().toLowerCase().slice(0, 255) : "";
+    const comments = typeof body.comments === "string" ? body.comments.trim().slice(0, 1000) : "";
+    const wants_to_organize = body.wants_to_organize === true;
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      return new Response(JSON.stringify({ error: "Email inválido" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -90,16 +122,15 @@ Deno.serve(async (req) => {
     const readRes = await fetch(`${baseUrl}/values/Sheet1!B:B`, { headers });
     const readData = await readRes.json();
     const emails = (readData.values || []).flat().map((e: string) => e.toLowerCase().trim());
-    const normalizedEmail = email.trim().toLowerCase();
 
-    if (emails.includes(normalizedEmail)) {
+    if (emails.includes(email)) {
       return new Response(JSON.stringify({ duplicate: true }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Append row with 5 columns: Nome, Email, Data, Comentários, Quero Organizar
+    // Append row
     const now = new Date().toLocaleString("pt-PT", { timeZone: "Europe/Lisbon" });
     const appendRes = await fetch(
       `${baseUrl}/values/Sheet1!A:E:append?valueInputOption=USER_ENTERED`,
@@ -108,10 +139,10 @@ Deno.serve(async (req) => {
         headers,
         body: JSON.stringify({
           values: [[
-            name || "",
-            normalizedEmail,
+            name,
+            email,
             now,
-            comments || "",
+            comments,
             wants_to_organize ? "Sim" : "Não",
           ]],
         }),
@@ -120,7 +151,8 @@ Deno.serve(async (req) => {
 
     if (!appendRes.ok) {
       const err = await appendRes.json();
-      throw new Error(`Sheets append error: ${JSON.stringify(err)}`);
+      console.error("Sheets append error:", JSON.stringify(err));
+      throw new Error("Failed to save subscription");
     }
 
     // Also save to DB as fallback
@@ -129,10 +161,10 @@ Deno.serve(async (req) => {
       const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
       const supabase = createClient(supabaseUrl, serviceRoleKey);
       await supabase.from("subscribers").insert({
-        email: normalizedEmail,
+        email,
         name: name || null,
         comments: comments || null,
-        wants_to_organize: wants_to_organize || false,
+        wants_to_organize,
       });
     } catch (_) {
       // Non-critical - Google Sheets is the primary store
@@ -144,7 +176,7 @@ Deno.serve(async (req) => {
     });
   } catch (e) {
     console.error("add-subscriber error:", e);
-    return new Response(JSON.stringify({ error: e.message }), {
+    return new Response(JSON.stringify({ error: "Ocorreu um erro. Tenta novamente." }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
