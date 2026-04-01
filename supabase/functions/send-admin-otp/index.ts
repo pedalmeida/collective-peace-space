@@ -108,10 +108,18 @@ Deno.serve(async (req) => {
       </div>
     `;
 
+    // Log pending before enqueue
+    await supabase.from('email_send_log').insert({
+      message_id: messageId,
+      template_name: 'admin-otp',
+      recipient_email: user.email,
+      status: 'pending',
+    });
+
     const { error: enqueueError } = await supabase.rpc('enqueue_email', {
       queue_name: 'transactional_emails',
       payload: {
-        to: [user.email],
+        to: user.email,
         from: "Meditar um Mundo Melhor <noreply@meditarmundomelhor.org>",
         sender_domain: "notify.meditarmundomelhor.org",
         subject: "Código de verificação — Backoffice",
@@ -119,6 +127,7 @@ Deno.serve(async (req) => {
         text: `O seu código de verificação é: ${rawCode}. Expira em 5 minutos.`,
         purpose: "transactional",
         label: "admin-otp",
+        idempotency_key: `admin-otp-${messageId}`,
         message_id: messageId,
         queued_at: new Date().toISOString(),
       },
