@@ -117,7 +117,7 @@ Deno.serve(async (req) => {
     });
 
     const { error: enqueueError } = await supabase.rpc('enqueue_email', {
-      queue_name: 'transactional_emails',
+      queue_name: 'auth_emails',
       payload: {
         to: user.email,
         from: "Meditar um Mundo Melhor <noreply@meditarmundomelhor.org>",
