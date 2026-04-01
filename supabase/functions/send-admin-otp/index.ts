@@ -91,45 +91,41 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Send OTP via Lovable AI
-    const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
-    if (!lovableApiKey) {
-      console.error("LOVABLE_API_KEY not configured");
-      return new Response(
-        JSON.stringify({ error: "Serviço temporariamente indisponível." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    // Enqueue OTP email via pgmq transactional queue
+    const messageId = crypto.randomUUID();
+    const emailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px;">
+        <h2 style="font-size: 20px; color: #1a1a1a; margin-bottom: 8px;">Código de verificação</h2>
+        <p style="font-size: 14px; color: #666; margin-bottom: 24px;">
+          Use o código abaixo para aceder ao backoffice. Este código expira em 5 minutos.
+        </p>
+        <div style="background: #f4f4f5; border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 24px;">
+          <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #1a1a1a;">${rawCode}</span>
+        </div>
+        <p style="font-size: 12px; color: #999;">
+          Se não solicitou este código, ignore este email.
+        </p>
+      </div>
+    `;
 
-    const emailResponse = await fetch("https://api.lovable.dev/api/v2/email", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${lovableApiKey}`,
-      },
-      body: JSON.stringify({
-        to: user.email,
+    const { error: enqueueError } = await supabase.rpc('enqueue_email', {
+      queue_name: 'transactional_emails',
+      payload: {
+        to: [user.email],
+        from: "Meditar um Mundo Melhor <noreply@meditarmundomelhor.org>",
+        sender_domain: "notify.meditarmundomelhor.org",
         subject: "Código de verificação — Backoffice",
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px;">
-            <h2 style="font-size: 20px; color: #1a1a1a; margin-bottom: 8px;">Código de verificação</h2>
-            <p style="font-size: 14px; color: #666; margin-bottom: 24px;">
-              Use o código abaixo para aceder ao backoffice. Este código expira em 5 minutos.
-            </p>
-            <div style="background: #f4f4f5; border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 24px;">
-              <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #1a1a1a;">${rawCode}</span>
-            </div>
-            <p style="font-size: 12px; color: #999;">
-              Se não solicitou este código, ignore este email.
-            </p>
-          </div>
-        `,
+        html: emailHtml,
         text: `O seu código de verificação é: ${rawCode}. Expira em 5 minutos.`,
-      }),
+        purpose: "transactional",
+        label: "admin-otp",
+        message_id: messageId,
+        queued_at: new Date().toISOString(),
+      },
     });
 
-    if (!emailResponse.ok) {
-      console.error("Email send failed:", await emailResponse.text());
+    if (enqueueError) {
+      console.error("Failed to enqueue OTP email:", enqueueError);
       return new Response(
         JSON.stringify({ error: "Não foi possível enviar o código." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
