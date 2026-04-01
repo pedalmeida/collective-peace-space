@@ -79,11 +79,12 @@ export function useAuth() {
     return { error: null, needs2FA: false, userId: null };
   };
 
-  const verify2FA = async (code: string) => {
-    if (!pendingUserId) return { error: "Sessão inválida." };
+  const verify2FA = async (code: string, userId?: string) => {
+    const targetUserId = userId || pendingUserId;
+    if (!targetUserId) return { error: "Sessão inválida." };
 
     const { data, error } = await supabase.functions.invoke("verify-admin-otp", {
-      body: { user_id: pendingUserId, code },
+      body: { user_id: targetUserId, code },
     });
 
     if (error || !data?.success) {
@@ -91,7 +92,7 @@ export function useAuth() {
     }
 
     // Mark 2FA as verified for this session
-    sessionStorage.setItem("admin_2fa_verified", pendingUserId);
+    sessionStorage.setItem("admin_2fa_verified", targetUserId);
     setIsAdmin(true);
     setNeeds2FA(false);
     return { error: null };

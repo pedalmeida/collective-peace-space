@@ -20,6 +20,7 @@ const AdminLogin = () => {
   const [otpCode, setOtpCode] = useState("");
   const [secondsLeft, setSecondsLeft] = useState(OTP_EXPIRY_SECONDS);
   const [canResend, setCanResend] = useState(false);
+  const [loginUserId, setLoginUserId] = useState<string | null>(null);
 
   // Timer countdown
   useEffect(() => {
@@ -58,6 +59,7 @@ const AdminLogin = () => {
     }
 
     if (requires2FA && userId) {
+      setLoginUserId(userId);
       // Send OTP code
       const { error: otpError } = await send2FACode(userId);
       if (otpError) {
@@ -79,7 +81,7 @@ const AdminLogin = () => {
     setError("");
     setSubmitting(true);
 
-    const { error: verifyError } = await verify2FA(otpCode);
+    const { error: verifyError } = await verify2FA(otpCode, loginUserId || undefined);
 
     if (verifyError) {
       setError(verifyError);
@@ -91,7 +93,7 @@ const AdminLogin = () => {
   const handleResend = async () => {
     setError("");
     setCanResend(false);
-    const { error: resendError } = await send2FACode();
+    const { error: resendError } = await send2FACode(loginUserId || undefined);
     if (resendError) {
       setError(resendError);
       setCanResend(true);
@@ -196,6 +198,7 @@ const AdminLogin = () => {
                   setStep("credentials");
                   setOtpCode("");
                   setError("");
+                  setLoginUserId(null);
                 }}
                 className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
               >
