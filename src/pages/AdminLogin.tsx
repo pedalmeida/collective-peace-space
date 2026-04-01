@@ -11,7 +11,7 @@ const OTP_LENGTH = 6;
 const OTP_EXPIRY_SECONDS = 300; // 5 minutes
 
 const AdminLogin = () => {
-  const { user, isAdmin, loading, signIn, verify2FA, send2FACode, needs2FA } = useAuth();
+  const { user, isAdmin, loading, signIn, verify2FA, send2FACode } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -31,16 +31,6 @@ const AdminLogin = () => {
     const timer = setTimeout(() => setSecondsLeft((s) => s - 1), 1000);
     return () => clearTimeout(timer);
   }, [step, secondsLeft]);
-
-  // When needs2FA changes and we're on credentials step, transition
-  useEffect(() => {
-    if (needs2FA && step === "credentials") {
-      setStep("otp");
-      setSecondsLeft(OTP_EXPIRY_SECONDS);
-      setCanResend(false);
-      setError("");
-    }
-  }, [needs2FA, step]);
 
   if (loading) {
     return (

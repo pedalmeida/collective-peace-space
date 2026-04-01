@@ -68,13 +68,6 @@ Deno.serve(async (req) => {
       .eq("used", false);
 
     // Generate 6-digit code
-    const code = Array.from(crypto.getRandomValues(new Uint8Array(3)))
-      .map((b) => (b % 10).toString())
-      .join("")
-      .padEnd(6, "0")
-      .slice(0, 6);
-
-    // Better: use full random range
     const rawCode = String(
       Math.floor(100000 + Math.random() * 900000)
     );
