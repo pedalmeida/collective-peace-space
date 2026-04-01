@@ -49,7 +49,7 @@ const AdminLogin = () => {
     setError("");
     setSubmitting(true);
 
-    const { error: authError, needs2FA: requires2FA } = await signIn(email, password);
+    const { error: authError, needs2FA: requires2FA, userId } = await signIn(email, password);
 
     if (authError) {
       setError("Credenciais inválidas.");
@@ -57,9 +57,9 @@ const AdminLogin = () => {
       return;
     }
 
-    if (requires2FA) {
+    if (requires2FA && userId) {
       // Send OTP code
-      const { error: otpError } = await send2FACode();
+      const { error: otpError } = await send2FACode(userId);
       if (otpError) {
         setError(otpError);
         setSubmitting(false);

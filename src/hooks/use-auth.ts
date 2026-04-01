@@ -61,7 +61,7 @@ export function useAuth() {
 
   const signIn = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return { error, needs2FA: false };
+    if (error) return { error, needs2FA: false, userId: null };
 
     // Check if this user is admin
     const { data: roleData } = await supabase.rpc("has_role", {
@@ -73,10 +73,10 @@ export function useAuth() {
       // Admin login — require 2FA
       setNeeds2FA(true);
       setPendingUserId(data.user.id);
-      return { error: null, needs2FA: true };
+      return { error: null, needs2FA: true, userId: data.user.id };
     }
 
-    return { error: null, needs2FA: false };
+    return { error: null, needs2FA: false, userId: null };
   };
 
   const verify2FA = async (code: string) => {
@@ -97,11 +97,12 @@ export function useAuth() {
     return { error: null };
   };
 
-  const send2FACode = async () => {
-    if (!pendingUserId) return { error: "Sessão inválida." };
+  const send2FACode = async (userId?: string) => {
+    const targetUserId = userId || pendingUserId;
+    if (!targetUserId) return { error: "Sessão inválida." };
 
     const { data, error } = await supabase.functions.invoke("send-admin-otp", {
-      body: { user_id: pendingUserId },
+      body: { user_id: targetUserId },
     });
 
     if (error || !data?.success) {
