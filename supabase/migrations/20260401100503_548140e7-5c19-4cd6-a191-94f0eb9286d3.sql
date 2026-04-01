@@ -1,0 +1,1 @@
+DELETE FROM admin_otp_codes WHERE user_id = '499a27ec-4cdd-431e-92ec-588868d38018' AND created_at < now() - interval '1 minute';
