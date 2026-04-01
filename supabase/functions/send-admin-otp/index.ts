@@ -108,6 +108,24 @@ Deno.serve(async (req) => {
       </div>
     `;
 
+    // Get or create unsubscribe token for recipient (required by email API)
+    const { data: existingToken } = await supabase
+      .from('email_unsubscribe_tokens')
+      .select('token')
+      .eq('email', user.email)
+      .maybeSingle();
+
+    let unsubscribeToken: string;
+    if (existingToken?.token) {
+      unsubscribeToken = existingToken.token;
+    } else {
+      unsubscribeToken = crypto.randomUUID();
+      await supabase.from('email_unsubscribe_tokens').insert({
+        email: user.email,
+        token: unsubscribeToken,
+      });
+    }
+
     // Log pending before enqueue
     await supabase.from('email_send_log').insert({
       message_id: messageId,
@@ -128,6 +146,7 @@ Deno.serve(async (req) => {
         purpose: "transactional",
         label: "admin-otp",
         idempotency_key: `admin-otp-${messageId}`,
+        unsubscribe_token: unsubscribeToken,
         message_id: messageId,
         queued_at: new Date().toISOString(),
       },
