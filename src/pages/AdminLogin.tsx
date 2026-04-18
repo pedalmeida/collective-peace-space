@@ -50,29 +50,32 @@ const AdminLogin = () => {
     setError("");
     setSubmitting(true);
 
-    const { error: authError, needs2FA: requires2FA, userId } = await signIn(email, password);
+    try {
+      const { error: authError, needs2FA: requires2FA, userId } = await signIn(email, password);
 
-    if (authError) {
-      setError("Credenciais inválidas.");
-      setSubmitting(false);
-      return;
-    }
-
-    if (requires2FA && userId) {
-      setLoginUserId(userId);
-      // Send OTP code
-      const { error: otpError } = await send2FACode(userId);
-      if (otpError) {
-        setError(otpError);
-        setSubmitting(false);
+      if (authError) {
+        setError("Credenciais inválidas.");
         return;
       }
-      setStep("otp");
-      setSecondsLeft(OTP_EXPIRY_SECONDS);
-      setCanResend(false);
-    }
 
-    setSubmitting(false);
+      if (requires2FA && userId) {
+        setLoginUserId(userId);
+        sessionStorage.setItem("admin_pending_user_id", userId);
+        const { error: otpError } = await send2FACode(userId);
+        if (otpError) {
+          setError(otpError);
+          return;
+        }
+        setStep("otp");
+        setSecondsLeft(OTP_EXPIRY_SECONDS);
+        setCanResend(false);
+      }
+    } catch (err) {
+      console.error("handleCredentials exception:", err);
+      setError("Ocorreu um erro inesperado. Tenta novamente.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleVerifyOTP = async (e: React.FormEvent) => {
@@ -81,26 +84,43 @@ const AdminLogin = () => {
     setError("");
     setSubmitting(true);
 
-    const { error: verifyError } = await verify2FA(otpCode, loginUserId || undefined);
+    try {
+      const targetUserId =
+        loginUserId || sessionStorage.getItem("admin_pending_user_id") || undefined;
+      const { error: verifyError } = await verify2FA(otpCode, targetUserId);
 
-    if (verifyError) {
-      setError(verifyError);
+      if (verifyError) {
+        setError(verifyError);
+        setOtpCode("");
+      }
+    } catch (err) {
+      console.error("handleVerifyOTP exception:", err);
+      setError("Ocorreu um erro inesperado. Tenta novamente.");
       setOtpCode("");
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitting(false);
   };
 
   const handleResend = async () => {
     setError("");
     setCanResend(false);
-    const { error: resendError } = await send2FACode(loginUserId || undefined);
-    if (resendError) {
-      setError(resendError);
+    try {
+      const targetUserId =
+        loginUserId || sessionStorage.getItem("admin_pending_user_id") || undefined;
+      const { error: resendError } = await send2FACode(targetUserId);
+      if (resendError) {
+        setError(resendError);
+        setCanResend(true);
+        return;
+      }
+      setSecondsLeft(OTP_EXPIRY_SECONDS);
+      setOtpCode("");
+    } catch (err) {
+      console.error("handleResend exception:", err);
+      setError("Erro ao reenviar o código.");
       setCanResend(true);
-      return;
     }
-    setSecondsLeft(OTP_EXPIRY_SECONDS);
-    setOtpCode("");
   };
 
   const formatTime = (seconds: number) => {
