@@ -1,25 +1,37 @@
 
 
-## Corrigir envio de OTP para usar a fila de emails
+## Plano: Corrigir verificação OTP que fica em loading infinito
 
-### Problema
+### Diagnóstico
 
-A função `send-admin-otp` envia emails diretamente via `fetch("https://api.lovable.dev/api/v2/email")`, contornando toda a infraestrutura de email já configurada no projeto. Os logs mostram erros "404 page not found" e 429 porque este endpoint direto não é o caminho correto — o projeto usa a biblioteca `@lovable.dev/email-js` através da fila pgmq gerida pelo `process-email-queue`.
+A partir dos logs e da session replay:
+- O user inseriu o código `359846`, clicou "Verificar"
+- O botão entrou em loading mas **nenhum pedido HTTP** foi feito
+- Os logs da Edge Function `verify-admin-otp` não registam invocações (a função existe e responde via curl direto)
+- O loading ficou eterno (>28s sem resposta nem erro visível)
 
-### Solução
+### Causa provável
 
-Reescrever `send-admin-otp` para enfileirar o email OTP via `supabase.rpc('enqueue_email', ...)` em vez de chamar a API diretamente. O email será processado pelo dispatcher `process-email-queue` que já gere rate-limiting, retries e logging automaticamente.
+`handleVerifyOTP` em `AdminLogin.tsx` não tem `try/catch`. Se `supabase.functions.invoke()` lançar uma exceção (em vez de devolver `{ error }`), o `setSubmitting(false)` nunca corre — exatamente o sintoma observado. Também não há `console.error`, por isso o erro fica invisível.
 
-### Alteração
+Adicionalmente, há possibilidade de o `pendingUserId` ser perdido entre passos devido a re-renders disparados pelo `onAuthStateChange` que corre logo após o `signInWithPassword`.
 
-**`supabase/functions/send-admin-otp/index.ts`**:
-- Remover o `fetch` direto à API Lovable e a dependência do `LOVABLE_API_KEY`
-- Substituir por uma chamada `supabase.rpc('enqueue_email', { queue_name: 'transactional_emails', payload: { ... } })` com os campos necessários (`to`, `from`, `sender_domain`, `subject`, `html`, `text`, `purpose`, `label`, `message_id`, `queued_at`)
-- Usar `notify.meditarmundomelhor.org` como `sender_domain` e `from: "Meditar um Mundo Melhor <noreply@meditarmundomelhor.org>"`
-- Gerar um `message_id` único (UUID) para rastreamento
+### Alterações
 
-Após a edição, redeploy da Edge Function `send-admin-otp`.
+**`src/pages/AdminLogin.tsx`**
+- Envolver `handleVerifyOTP` e `handleCredentials` em `try/catch/finally` para garantir que `setSubmitting(false)` corre sempre, mesmo em caso de exceção
+- Adicionar `console.error` para tornar futuros erros visíveis nos logs do browser
+- Persistir `loginUserId` em `sessionStorage` quando set, para sobreviver a qualquer re-render/remount inesperado entre o passo de credenciais e o passo OTP
 
-### Ficheiros alterados
-- `supabase/functions/send-admin-otp/index.ts`
+**`src/hooks/use-auth.ts`**
+- Adicionar `try/catch` em `verify2FA` e `send2FACode` para retornar erro estruturado em vez de lançar exceção
+- Tornar `pendingUserId` mais resiliente: lê de `sessionStorage` como fallback se o state em memória estiver vazio
+
+**Re-deploy:** Não é necessário (apenas frontend).
+
+### Como testar
+1. Após o deploy, ir a `/admin/login`
+2. Introduzir credenciais → receber OTP por email
+3. Inserir o código de 6 dígitos e clicar "Verificar"
+4. Confirmar entrada no `/admin`. Se falhar, o erro estará agora visível no UI e na consola
 
