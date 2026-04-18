@@ -17,7 +17,7 @@ export const Organizers = () => {
             </p>
           </div>
           <p className="text-sm text-muted-foreground">
-            Se pretendes adicionar-te à lista de organizadores contacta:{" "}
+            Se queres colaborar na organização de um destes eventos ou organizar um evento na tua região contacta:{" "}
             <a href="mailto:info@meditarmundomelhor.org" className="text-accent hover:underline">
               info@meditarmundomelhor.org
             </a>
