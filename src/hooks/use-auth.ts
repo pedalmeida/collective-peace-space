@@ -2,11 +2,34 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
+const ADMIN_PENDING_USER_ID_KEY = "admin_pending_user_id";
+const ADMIN_2FA_VERIFIED_KEY = "admin_2fa_verified";
+const ADMIN_LOGIN_STEP_KEY = "admin_login_step";
+const ADMIN_LOGIN_EMAIL_KEY = "admin_login_email";
+const ADMIN_OTP_EXPIRES_AT_KEY = "admin_otp_expires_at";
+
+const readSessionValue = (key: string) =>
+  typeof window === "undefined" ? null : window.sessionStorage.getItem(key);
+
+const writeSessionValue = (key: string, value: string) => {
+  if (typeof window !== "undefined") {
+    window.sessionStorage.setItem(key, value);
+  }
+};
+
+const clearSessionValues = (...keys: string[]) => {
+  if (typeof window !== "undefined") {
+    keys.forEach((key) => window.sessionStorage.removeItem(key));
+  }
+};
+
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [needs2FA, setNeeds2FA] = useState(false);
-  const [pendingUserId, setPendingUserId] = useState<string | null>(null);
+  const [pendingUserId, setPendingUserId] = useState<string | null>(() =>
+    readSessionValue(ADMIN_PENDING_USER_ID_KEY)
+  );
   const [loading, setLoading] = useState(true);
 
   const checkAdmin = useCallback(async (currentUser: User | null) => {
@@ -16,17 +39,22 @@ export function useAuth() {
           _user_id: currentUser.id,
           _role: "admin",
         });
-        // Don't set isAdmin yet — only after 2FA verification on fresh login
-        // But if already authenticated (page refresh), check if 2FA was completed
-        const otpVerified = sessionStorage.getItem("admin_2fa_verified");
+        const otpVerified = readSessionValue(ADMIN_2FA_VERIFIED_KEY);
         if (!!data && otpVerified === currentUser.id) {
           setIsAdmin(true);
           setNeeds2FA(false);
+          setPendingUserId(null);
+          clearSessionValues(ADMIN_PENDING_USER_ID_KEY, ADMIN_LOGIN_STEP_KEY, ADMIN_OTP_EXPIRES_AT_KEY);
         } else if (!!data) {
-          // Admin but no 2FA yet — don't grant access
+          writeSessionValue(ADMIN_PENDING_USER_ID_KEY, currentUser.id);
+          setPendingUserId(currentUser.id);
+          setNeeds2FA(true);
           setIsAdmin(false);
         } else {
           setIsAdmin(false);
+          setNeeds2FA(false);
+          setPendingUserId(null);
+          clearSessionValues(ADMIN_PENDING_USER_ID_KEY, ADMIN_LOGIN_STEP_KEY, ADMIN_OTP_EXPIRES_AT_KEY);
         }
       } catch {
         setIsAdmin(false);
@@ -35,6 +63,7 @@ export function useAuth() {
       setIsAdmin(false);
       setNeeds2FA(false);
       setPendingUserId(null);
+      clearSessionValues(ADMIN_PENDING_USER_ID_KEY, ADMIN_LOGIN_STEP_KEY, ADMIN_OTP_EXPIRES_AT_KEY);
     }
     setUser(currentUser);
     setLoading(false);
@@ -70,20 +99,20 @@ export function useAuth() {
     });
 
     if (roleData) {
-      // Admin login — require 2FA
-      sessionStorage.setItem("admin_pending_user_id", data.user.id);
+      writeSessionValue(ADMIN_PENDING_USER_ID_KEY, data.user.id);
       setNeeds2FA(true);
       setPendingUserId(data.user.id);
-      return { error: null, needs2FA: true, userId: data.user.id };
+      return { error: null, needs2FA: true, userId: data.user.id, success: true };
     }
 
-    return { error: null, needs2FA: false, userId: null };
+    clearSessionValues(ADMIN_PENDING_USER_ID_KEY, ADMIN_LOGIN_STEP_KEY, ADMIN_OTP_EXPIRES_AT_KEY);
+    return { error: null, needs2FA: false, userId: null, success: true };
   };
 
   const verify2FA = async (code: string, userId?: string) => {
     const targetUserId =
-      userId || pendingUserId || sessionStorage.getItem("admin_pending_user_id");
-    if (!targetUserId) return { error: "Sessão inválida." };
+      userId || pendingUserId || readSessionValue(ADMIN_PENDING_USER_ID_KEY);
+    if (!targetUserId) return { success: false, error: "Sessão inválida." };
 
     try {
       const { data, error } = await supabase.functions.invoke("verify-admin-otp", {
@@ -92,25 +121,28 @@ export function useAuth() {
 
       if (error || !data?.success) {
         console.error("verify2FA failed:", { error, data });
-        return { error: data?.error || error?.message || "Código inválido ou expirado." };
+        return {
+          success: false,
+          error: data?.error || error?.message || "Código inválido ou expirado.",
+        };
       }
 
-      // Mark 2FA as verified for this session
-      sessionStorage.setItem("admin_2fa_verified", targetUserId);
-      sessionStorage.removeItem("admin_pending_user_id");
+      writeSessionValue(ADMIN_2FA_VERIFIED_KEY, targetUserId);
+      clearSessionValues(ADMIN_PENDING_USER_ID_KEY, ADMIN_LOGIN_STEP_KEY, ADMIN_OTP_EXPIRES_AT_KEY);
+      setPendingUserId(null);
       setIsAdmin(true);
       setNeeds2FA(false);
-      return { error: null };
+      return { success: true, error: null };
     } catch (e) {
       console.error("verify2FA exception:", e);
-      return { error: "Erro de rede ao verificar o código. Tenta novamente." };
+      return { success: false, error: "Erro de rede ao verificar o código. Tenta novamente." };
     }
   };
 
   const send2FACode = async (userId?: string) => {
     const targetUserId =
-      userId || pendingUserId || sessionStorage.getItem("admin_pending_user_id");
-    if (!targetUserId) return { error: "Sessão inválida." };
+      userId || pendingUserId || readSessionValue(ADMIN_PENDING_USER_ID_KEY);
+    if (!targetUserId) return { success: false, error: "Sessão inválida." };
 
     try {
       const { data, error } = await supabase.functions.invoke("send-admin-otp", {
@@ -119,19 +151,27 @@ export function useAuth() {
 
       if (error || !data?.success) {
         console.error("send2FACode failed:", { error, data });
-        return { error: data?.error || error?.message || "Não foi possível enviar o código." };
+        return {
+          success: false,
+          error: data?.error || error?.message || "Não foi possível enviar o código.",
+        };
       }
 
-      return { error: null };
+      return { success: true, error: null };
     } catch (e) {
       console.error("send2FACode exception:", e);
-      return { error: "Erro de rede ao enviar o código. Tenta novamente." };
+      return { success: false, error: "Erro de rede ao enviar o código. Tenta novamente." };
     }
   };
 
   const signOut = async () => {
-    sessionStorage.removeItem("admin_2fa_verified");
-    sessionStorage.removeItem("admin_pending_user_id");
+    clearSessionValues(
+      ADMIN_2FA_VERIFIED_KEY,
+      ADMIN_PENDING_USER_ID_KEY,
+      ADMIN_LOGIN_STEP_KEY,
+      ADMIN_LOGIN_EMAIL_KEY,
+      ADMIN_OTP_EXPIRES_AT_KEY,
+    );
     setNeeds2FA(false);
     setPendingUserId(null);
     await supabase.auth.signOut();
