@@ -71,6 +71,7 @@ export function useAuth() {
 
     if (roleData) {
       // Admin login — require 2FA
+      sessionStorage.setItem("admin_pending_user_id", data.user.id);
       setNeeds2FA(true);
       setPendingUserId(data.user.id);
       return { error: null, needs2FA: true, userId: data.user.id };
