@@ -80,41 +80,57 @@ export function useAuth() {
   };
 
   const verify2FA = async (code: string, userId?: string) => {
-    const targetUserId = userId || pendingUserId;
+    const targetUserId =
+      userId || pendingUserId || sessionStorage.getItem("admin_pending_user_id");
     if (!targetUserId) return { error: "Sessão inválida." };
 
-    const { data, error } = await supabase.functions.invoke("verify-admin-otp", {
-      body: { user_id: targetUserId, code },
-    });
+    try {
+      const { data, error } = await supabase.functions.invoke("verify-admin-otp", {
+        body: { user_id: targetUserId, code },
+      });
 
-    if (error || !data?.success) {
-      return { error: data?.error || "Código inválido ou expirado." };
+      if (error || !data?.success) {
+        console.error("verify2FA failed:", { error, data });
+        return { error: data?.error || error?.message || "Código inválido ou expirado." };
+      }
+
+      // Mark 2FA as verified for this session
+      sessionStorage.setItem("admin_2fa_verified", targetUserId);
+      sessionStorage.removeItem("admin_pending_user_id");
+      setIsAdmin(true);
+      setNeeds2FA(false);
+      return { error: null };
+    } catch (e) {
+      console.error("verify2FA exception:", e);
+      return { error: "Erro de rede ao verificar o código. Tenta novamente." };
     }
-
-    // Mark 2FA as verified for this session
-    sessionStorage.setItem("admin_2fa_verified", targetUserId);
-    setIsAdmin(true);
-    setNeeds2FA(false);
-    return { error: null };
   };
 
   const send2FACode = async (userId?: string) => {
-    const targetUserId = userId || pendingUserId;
+    const targetUserId =
+      userId || pendingUserId || sessionStorage.getItem("admin_pending_user_id");
     if (!targetUserId) return { error: "Sessão inválida." };
 
-    const { data, error } = await supabase.functions.invoke("send-admin-otp", {
-      body: { user_id: targetUserId },
-    });
+    try {
+      const { data, error } = await supabase.functions.invoke("send-admin-otp", {
+        body: { user_id: targetUserId },
+      });
 
-    if (error || !data?.success) {
-      return { error: data?.error || "Não foi possível enviar o código." };
+      if (error || !data?.success) {
+        console.error("send2FACode failed:", { error, data });
+        return { error: data?.error || error?.message || "Não foi possível enviar o código." };
+      }
+
+      return { error: null };
+    } catch (e) {
+      console.error("send2FACode exception:", e);
+      return { error: "Erro de rede ao enviar o código. Tenta novamente." };
     }
-
-    return { error: null };
   };
 
   const signOut = async () => {
     sessionStorage.removeItem("admin_2fa_verified");
+    sessionStorage.removeItem("admin_pending_user_id");
     setNeeds2FA(false);
     setPendingUserId(null);
     await supabase.auth.signOut();
