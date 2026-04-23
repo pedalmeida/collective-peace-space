@@ -13,6 +13,12 @@ async function sha256(message: string): Promise<string> {
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+const jsonResponse = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -20,78 +26,83 @@ Deno.serve(async (req) => {
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+    // 1. Authenticate caller from bearer token
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      console.warn("[send-admin-otp] missing bearer token");
+      return jsonResponse({ error: "Sessão inválida." }, 401);
+    }
+    const token = authHeader.replace("Bearer ", "");
+
+    const authClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: claims, error: claimsErr } = await authClient.auth.getClaims(token);
+    if (claimsErr || !claims?.claims?.sub) {
+      console.warn("[send-admin-otp] invalid token", claimsErr);
+      return jsonResponse({ error: "Sessão inválida." }, 401);
+    }
+    const userId = claims.claims.sub as string;
+
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-    const { user_id } = await req.json();
-    if (!user_id) {
-      return new Response(
-        JSON.stringify({ error: "Pedido inválido." }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Verify user exists and is admin
+    // 2. Verify caller is admin
     const { data: roles } = await supabase
       .from("user_roles")
       .select("role")
-      .eq("user_id", user_id)
+      .eq("user_id", userId)
       .eq("role", "admin");
 
     if (!roles?.length) {
-      return new Response(
-        JSON.stringify({ error: "Sem permissão." }),
-        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      console.warn("[send-admin-otp] user is not admin", userId);
+      return jsonResponse({ error: "Sem permissão." }, 403);
     }
 
-    // Rate limit: max 3 codes per user in last 15 minutes
+    // 3. Rate limit: max 3 codes per user in last 15 minutes
     const fifteenMinAgo = new Date(Date.now() - 15 * 60 * 1000).toISOString();
     const { data: recentCodes } = await supabase
       .from("admin_otp_codes")
       .select("id")
-      .eq("user_id", user_id)
+      .eq("user_id", userId)
       .gte("created_at", fifteenMinAgo);
 
     if (recentCodes && recentCodes.length >= 3) {
-      return new Response(
-        JSON.stringify({ error: "Demasiados pedidos. Tente novamente mais tarde." }),
-        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      console.warn("[send-admin-otp] rate limit hit", userId);
+      return jsonResponse(
+        { error: "Demasiados pedidos. Tente novamente mais tarde." },
+        429,
       );
     }
 
-    // Invalidate previous unused codes
+    // 4. Invalidate previous unused codes
     await supabase
       .from("admin_otp_codes")
       .update({ used: true })
-      .eq("user_id", user_id)
+      .eq("user_id", userId)
       .eq("used", false);
 
-    // Generate 6-digit code
-    const rawCode = String(
-      Math.floor(100000 + Math.random() * 900000)
-    );
-
+    // 5. Generate code
+    const rawCode = String(Math.floor(100000 + Math.random() * 900000));
     const codeHash = await sha256(rawCode);
 
-    // Store hashed code with 5 min expiry
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
     await supabase.from("admin_otp_codes").insert({
-      user_id,
+      user_id: userId,
       code_hash: codeHash,
       expires_at: expiresAt,
     });
 
-    // Get user email
-    const { data: { user } } = await supabase.auth.admin.getUserById(user_id);
+    // 6. Get user email
+    const { data: { user } } = await supabase.auth.admin.getUserById(userId);
     if (!user?.email) {
-      return new Response(
-        JSON.stringify({ error: "Não foi possível enviar o código." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      console.error("[send-admin-otp] no email for user", userId);
+      return jsonResponse({ error: "Não foi possível enviar o código." }, 500);
     }
 
-    // Enqueue OTP email via pgmq transactional queue
+    // 7. Enqueue OTP email via pgmq
     const messageId = crypto.randomUUID();
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px;">
@@ -108,11 +119,10 @@ Deno.serve(async (req) => {
       </div>
     `;
 
-    // Get or create unsubscribe token for recipient (required by email API)
     const { data: existingToken } = await supabase
-      .from('email_unsubscribe_tokens')
-      .select('token')
-      .eq('email', user.email)
+      .from("email_unsubscribe_tokens")
+      .select("token")
+      .eq("email", user.email)
       .maybeSingle();
 
     let unsubscribeToken: string;
@@ -120,22 +130,21 @@ Deno.serve(async (req) => {
       unsubscribeToken = existingToken.token;
     } else {
       unsubscribeToken = crypto.randomUUID();
-      await supabase.from('email_unsubscribe_tokens').insert({
+      await supabase.from("email_unsubscribe_tokens").insert({
         email: user.email,
         token: unsubscribeToken,
       });
     }
 
-    // Log pending before enqueue
-    await supabase.from('email_send_log').insert({
+    await supabase.from("email_send_log").insert({
       message_id: messageId,
-      template_name: 'admin-otp',
+      template_name: "admin-otp",
       recipient_email: user.email,
-      status: 'pending',
+      status: "pending",
     });
 
-    const { error: enqueueError } = await supabase.rpc('enqueue_email', {
-      queue_name: 'auth_emails',
+    const { error: enqueueError } = await supabase.rpc("enqueue_email", {
+      queue_name: "auth_emails",
       payload: {
         to: user.email,
         from: "Meditar um Mundo Melhor <noreply@meditarmundomelhor.org>",
@@ -153,22 +162,14 @@ Deno.serve(async (req) => {
     });
 
     if (enqueueError) {
-      console.error("Failed to enqueue OTP email:", enqueueError);
-      return new Response(
-        JSON.stringify({ error: "Não foi possível enviar o código." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      console.error("[send-admin-otp] enqueue failed:", enqueueError);
+      return jsonResponse({ error: "Não foi possível enviar o código." }, 500);
     }
 
-    return new Response(
-      JSON.stringify({ success: true }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    console.log("[send-admin-otp] OTP sent for user", userId);
+    return jsonResponse({ success: true });
   } catch (e) {
-    console.error("send-admin-otp error:", e);
-    return new Response(
-      JSON.stringify({ error: "Ocorreu um erro interno." }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    console.error("[send-admin-otp] error:", e);
+    return jsonResponse({ error: "Ocorreu um erro interno." }, 500);
   }
 });
