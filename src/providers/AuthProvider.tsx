@@ -105,7 +105,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           _user_id: currentSession.user.id,
           _role: "admin",
         }),
-        // @ts-expect-error - new RPC not yet in generated types
         supabase.rpc("has_verified_admin_session", {
           _user_id: currentSession.user.id,
         }),
