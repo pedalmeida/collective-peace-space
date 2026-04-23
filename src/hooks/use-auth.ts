@@ -7,6 +7,7 @@ const ADMIN_2FA_VERIFIED_KEY = "admin_2fa_verified";
 const ADMIN_LOGIN_STEP_KEY = "admin_login_step";
 const ADMIN_LOGIN_EMAIL_KEY = "admin_login_email";
 const ADMIN_OTP_EXPIRES_AT_KEY = "admin_otp_expires_at";
+const ADMIN_ACCESS_TOKEN_KEY = "admin_access_token";
 
 const readSessionValue = (key: string) =>
   typeof window === "undefined" ? null : window.sessionStorage.getItem(key);
@@ -20,6 +21,60 @@ const writeSessionValue = (key: string, value: string) => {
 const clearSessionValues = (...keys: string[]) => {
   if (typeof window !== "undefined") {
     keys.forEach((key) => window.sessionStorage.removeItem(key));
+  }
+};
+
+const syncAccessToken = (accessToken: string | null | undefined) => {
+  if (accessToken) {
+    writeSessionValue(ADMIN_ACCESS_TOKEN_KEY, accessToken);
+    return;
+  }
+
+  clearSessionValues(ADMIN_ACCESS_TOKEN_KEY);
+};
+
+const callAdminFunction = async <T>(
+  functionName: "send-admin-otp" | "verify-admin-otp",
+  body: Record<string, unknown>,
+) => {
+  const accessToken = readSessionValue(ADMIN_ACCESS_TOKEN_KEY);
+
+  if (!accessToken) {
+    return { data: null as T | null, error: "Sessão expirada. Inicia sessão novamente." };
+  }
+
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${functionName}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(body),
+        signal: AbortSignal.timeout(15000),
+      },
+    );
+
+    const text = await response.text();
+    const data = text ? (JSON.parse(text) as T & { error?: string }) : null;
+
+    if (!response.ok) {
+      return {
+        data: null as T | null,
+        error: data?.error || `Pedido falhou (${response.status}).`,
+      };
+    }
+
+    return { data: data as T | null, error: null };
+  } catch (error) {
+    console.error(`${functionName} request failed:`, error);
+    return {
+      data: null as T | null,
+      error: "Erro de rede ao contactar o servidor. Tenta novamente.",
+    };
   }
 };
 
@@ -72,16 +127,19 @@ export function useAuth() {
   useEffect(() => {
     let initialSessionHandled = false;
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        if (initialSessionHandled) {
-          await checkAdmin(session?.user ?? null);
-        }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      syncAccessToken(session?.access_token);
+
+      if (initialSessionHandled) {
+        window.setTimeout(() => {
+          void checkAdmin(session?.user ?? null);
+        }, 0);
       }
-    );
+    });
 
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       initialSessionHandled = true;
+      syncAccessToken(session?.access_token);
       await checkAdmin(session?.user ?? null);
     });
 
@@ -91,6 +149,8 @@ export function useAuth() {
   const signIn = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return { error, needs2FA: false, userId: null };
+
+    syncAccessToken(data.session?.access_token);
 
     // Check if this user is admin
     const { data: roleData } = await supabase.rpc("has_role", {
@@ -115,15 +175,16 @@ export function useAuth() {
     if (!targetUserId) return { success: false, error: "Sessão inválida." };
 
     try {
-      const { data, error } = await supabase.functions.invoke("verify-admin-otp", {
-        body: { user_id: targetUserId, code },
-      });
+      const { data, error } = await callAdminFunction<{ success?: boolean; error?: string }>(
+        "verify-admin-otp",
+        { user_id: targetUserId, code },
+      );
 
       if (error || !data?.success) {
         console.error("verify2FA failed:", { error, data });
         return {
           success: false,
-          error: data?.error || error?.message || "Código inválido ou expirado.",
+          error: data?.error || error || "Código inválido ou expirado.",
         };
       }
 
@@ -145,15 +206,16 @@ export function useAuth() {
     if (!targetUserId) return { success: false, error: "Sessão inválida." };
 
     try {
-      const { data, error } = await supabase.functions.invoke("send-admin-otp", {
-        body: { user_id: targetUserId },
-      });
+      const { data, error } = await callAdminFunction<{ success?: boolean; error?: string }>(
+        "send-admin-otp",
+        { user_id: targetUserId },
+      );
 
       if (error || !data?.success) {
         console.error("send2FACode failed:", { error, data });
         return {
           success: false,
-          error: data?.error || error?.message || "Não foi possível enviar o código.",
+          error: data?.error || error || "Não foi possível enviar o código.",
         };
       }
 
@@ -171,6 +233,7 @@ export function useAuth() {
       ADMIN_LOGIN_STEP_KEY,
       ADMIN_LOGIN_EMAIL_KEY,
       ADMIN_OTP_EXPIRES_AT_KEY,
+      ADMIN_ACCESS_TOKEN_KEY,
     );
     setNeeds2FA(false);
     setPendingUserId(null);
