@@ -184,7 +184,7 @@ export function useAuth() {
         console.error("verify2FA failed:", { error, data });
         return {
           success: false,
-          error: data?.error || error?.message || "Código inválido ou expirado.",
+          error: data?.error || error || "Código inválido ou expirado.",
         };
       }
 
@@ -215,7 +215,7 @@ export function useAuth() {
         console.error("send2FACode failed:", { error, data });
         return {
           success: false,
-          error: data?.error || error?.message || "Não foi possível enviar o código.",
+          error: data?.error || error || "Não foi possível enviar o código.",
         };
       }
 
