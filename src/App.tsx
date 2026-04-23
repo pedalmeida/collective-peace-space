@@ -25,22 +25,24 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/evento/:slug" element={<EventDetail />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminEvents />} />
-            <Route path="eventos/:id" element={<AdminEventForm />} />
-            <Route path="galeria" element={<AdminGallery />} />
-            <Route path="subscritores" element={<AdminSubscribers />} />
-            <Route path="utilizadores" element={<AdminUsers />} />
-            <Route path="organizacoes" element={<AdminOrganizations />} />
-            <Route path="citacoes" element={<AdminQuotes />} />
-          </Route>
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/evento/:slug" element={<EventDetail />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminEvents />} />
+              <Route path="eventos/:id" element={<AdminEventForm />} />
+              <Route path="galeria" element={<AdminGallery />} />
+              <Route path="subscritores" element={<AdminSubscribers />} />
+              <Route path="utilizadores" element={<AdminUsers />} />
+              <Route path="organizacoes" element={<AdminOrganizations />} />
+              <Route path="citacoes" element={<AdminQuotes />} />
+            </Route>
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
