@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/providers/AuthProvider";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,107 +8,51 @@ import { Loader2, ArrowLeft } from "lucide-react";
 
 const OTP_LENGTH = 6;
 const OTP_EXPIRY_SECONDS = 300; // 5 minutes
-const ADMIN_PENDING_USER_ID_KEY = "admin_pending_user_id";
-const ADMIN_LOGIN_STEP_KEY = "admin_login_step";
-const ADMIN_LOGIN_EMAIL_KEY = "admin_login_email";
-const ADMIN_OTP_EXPIRES_AT_KEY = "admin_otp_expires_at";
-
-const readSessionValue = (key: string) =>
-  typeof window === "undefined" ? null : window.sessionStorage.getItem(key);
-
-const writeSessionValue = (key: string, value: string) => {
-  if (typeof window !== "undefined") {
-    window.sessionStorage.setItem(key, value);
-  }
-};
-
-const clearSessionValues = (...keys: string[]) => {
-  if (typeof window !== "undefined") {
-    keys.forEach((key) => window.sessionStorage.removeItem(key));
-  }
-};
-
-const getRemainingOtpSeconds = () => {
-  const expiresAt = Number(readSessionValue(ADMIN_OTP_EXPIRES_AT_KEY) ?? "0");
-  if (!expiresAt) return 0;
-  return Math.max(0, Math.ceil((expiresAt - Date.now()) / 1000));
-};
 
 const AdminLogin = () => {
   const navigate = useNavigate();
-  const initialPendingUserId = readSessionValue(ADMIN_PENDING_USER_ID_KEY);
-  const shouldRestoreOtpStep =
-    readSessionValue(ADMIN_LOGIN_STEP_KEY) === "otp" && !!initialPendingUserId;
-  const { user, isAdmin, pendingUserId, loading, signIn, verify2FA, send2FACode } = useAuth();
-  const [email, setEmail] = useState(() => readSessionValue(ADMIN_LOGIN_EMAIL_KEY) ?? "");
+  const {
+    authReady,
+    user,
+    canAccessAdmin,
+    adminGateStatus,
+    signIn,
+    verify2FA,
+    send2FACode,
+    signOut,
+  } = useAuth();
+
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [step, setStep] = useState<"credentials" | "otp">(
-    shouldRestoreOtpStep ? "otp" : "credentials",
-  );
+  const [step, setStep] = useState<"credentials" | "otp">("credentials");
   const [otpCode, setOtpCode] = useState("");
-  const [secondsLeft, setSecondsLeft] = useState(() =>
-    shouldRestoreOtpStep ? getRemainingOtpSeconds() : OTP_EXPIRY_SECONDS,
-  );
-  const [canResend, setCanResend] = useState(() =>
-    shouldRestoreOtpStep ? getRemainingOtpSeconds() <= 0 : false,
-  );
-  const [loginUserId, setLoginUserId] = useState<string | null>(initialPendingUserId);
+  const [secondsLeft, setSecondsLeft] = useState(OTP_EXPIRY_SECONDS);
+  const [canResend, setCanResend] = useState(false);
 
+  // Restore OTP step automatically if the user is already signed in but not yet 2FA-verified
   useEffect(() => {
-    if (email) {
-      writeSessionValue(ADMIN_LOGIN_EMAIL_KEY, email);
-      return;
+    if (!authReady) return;
+    if (adminGateStatus === "signed_in_pending_2fa" && step === "credentials") {
+      setStep("otp");
+      setSecondsLeft(OTP_EXPIRY_SECONDS);
+      setCanResend(false);
     }
-    clearSessionValues(ADMIN_LOGIN_EMAIL_KEY);
-  }, [email]);
+  }, [authReady, adminGateStatus, step]);
 
-  useEffect(() => {
-    if (step === "otp" && !loginUserId && pendingUserId) {
-      setLoginUserId(pendingUserId);
-    }
-  }, [step, loginUserId, pendingUserId]);
-
-  const startOtpStep = (userId: string) => {
-    const expiresAt = Date.now() + OTP_EXPIRY_SECONDS * 1000;
-    writeSessionValue(ADMIN_PENDING_USER_ID_KEY, userId);
-    writeSessionValue(ADMIN_LOGIN_STEP_KEY, "otp");
-    writeSessionValue(ADMIN_OTP_EXPIRES_AT_KEY, String(expiresAt));
-    setLoginUserId(userId);
-    setStep("otp");
-    setOtpCode("");
-    setSecondsLeft(OTP_EXPIRY_SECONDS);
-    setCanResend(false);
-  };
-
-  const resetOtpStep = () => {
-    clearSessionValues(
-      ADMIN_PENDING_USER_ID_KEY,
-      ADMIN_LOGIN_STEP_KEY,
-      ADMIN_OTP_EXPIRES_AT_KEY,
-      "admin_2fa_verified",
-    );
-    setStep("credentials");
-    setOtpCode("");
-    setLoginUserId(null);
-    setSecondsLeft(OTP_EXPIRY_SECONDS);
-    setCanResend(false);
-    setSubmitting(false);
-  };
-
+  // Countdown
   useEffect(() => {
     if (step !== "otp") return;
     if (secondsLeft <= 0) {
       setCanResend(true);
-      clearSessionValues(ADMIN_OTP_EXPIRES_AT_KEY);
       return;
     }
     const timer = setTimeout(() => setSecondsLeft((s) => s - 1), 1000);
     return () => clearTimeout(timer);
   }, [step, secondsLeft]);
 
-  if (loading) {
+  if (!authReady) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
@@ -116,7 +60,7 @@ const AdminLogin = () => {
     );
   }
 
-  if (user && isAdmin) {
+  if (canAccessAdmin) {
     return <Navigate to="/admin" replace />;
   }
 
@@ -126,21 +70,27 @@ const AdminLogin = () => {
     setSubmitting(true);
 
     try {
-      const { error: authError, needs2FA: requires2FA, userId } = await signIn(email, password);
-
+      const { error: authError, needs2FA } = await signIn(email, password);
       if (authError) {
-        setError("Credenciais inválidas.");
+        setError(authError);
+        return;
+      }
+      if (!needs2FA) {
+        setError("Esta conta não tem permissões de administrador.");
+        await signOut();
         return;
       }
 
-      if (requires2FA && userId) {
-        const { error: otpError } = await send2FACode(userId);
-        if (otpError) {
-          setError(otpError);
-          return;
-        }
-        startOtpStep(userId);
+      const { error: otpError } = await send2FACode();
+      if (otpError) {
+        setError(otpError);
+        return;
       }
+
+      setStep("otp");
+      setOtpCode("");
+      setSecondsLeft(OTP_EXPIRY_SECONDS);
+      setCanResend(false);
     } catch (err) {
       console.error("handleCredentials exception:", err);
       setError("Ocorreu um erro inesperado. Tenta novamente.");
@@ -155,17 +105,12 @@ const AdminLogin = () => {
     setSubmitting(true);
 
     try {
-      const targetUserId =
-        loginUserId || pendingUserId || readSessionValue(ADMIN_PENDING_USER_ID_KEY) || undefined;
-      const { error: verifyError } = await verify2FA(otpCode, targetUserId);
-
+      const { error: verifyError } = await verify2FA(otpCode);
       if (verifyError) {
         setError(verifyError);
         setOtpCode("");
         return;
       }
-
-      clearSessionValues(ADMIN_LOGIN_STEP_KEY, ADMIN_OTP_EXPIRES_AT_KEY);
       navigate("/admin", { replace: true });
     } catch (err) {
       console.error("handleVerifyOTP exception:", err);
@@ -180,21 +125,30 @@ const AdminLogin = () => {
     setError("");
     setCanResend(false);
     try {
-      const targetUserId =
-        loginUserId || pendingUserId || readSessionValue(ADMIN_PENDING_USER_ID_KEY) || undefined;
-      const { error: resendError } = await send2FACode(targetUserId);
+      const { error: resendError } = await send2FACode();
       if (resendError) {
         setError(resendError);
         setCanResend(true);
         return;
       }
-      if (targetUserId) {
-        startOtpStep(targetUserId);
-      }
+      setSecondsLeft(OTP_EXPIRY_SECONDS);
+      setOtpCode("");
     } catch (err) {
       console.error("handleResend exception:", err);
       setError("Erro ao reenviar o código.");
       setCanResend(true);
+    }
+  };
+
+  const handleBack = async () => {
+    setStep("credentials");
+    setOtpCode("");
+    setError("");
+    setSubmitting(false);
+    setSecondsLeft(OTP_EXPIRY_SECONDS);
+    setCanResend(false);
+    if (user) {
+      await signOut();
     }
   };
 
@@ -308,7 +262,7 @@ const AdminLogin = () => {
             <div className="flex items-center justify-between">
               <button
                 type="button"
-                onClick={resetOtpStep}
+                onClick={() => void handleBack()}
                 className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
               >
                 <ArrowLeft className="w-3 h-3" />
@@ -316,7 +270,7 @@ const AdminLogin = () => {
               </button>
               <button
                 type="button"
-                onClick={handleResend}
+                onClick={() => void handleResend()}
                 disabled={!canResend}
                 className="text-xs text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >

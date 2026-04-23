@@ -1,5 +1,5 @@
 import { Navigate, Outlet, Link, useLocation } from "react-router-dom";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/providers/AuthProvider";
 import { Loader2, CalendarDays, Image, LogOut, Home, Users, ShieldCheck, Sparkles, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -14,10 +14,10 @@ const navItems = [
 ];
 
 const AdminLayout = () => {
-  const { user, isAdmin, loading, signOut } = useAuth();
+  const { authReady, canAccessAdmin, signOut } = useAuth();
   const location = useLocation();
 
-  if (loading) {
+  if (!authReady) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
@@ -25,7 +25,7 @@ const AdminLayout = () => {
     );
   }
 
-  if (!user || !isAdmin) {
+  if (!canAccessAdmin) {
     return <Navigate to="/admin/login" replace />;
   }
 
