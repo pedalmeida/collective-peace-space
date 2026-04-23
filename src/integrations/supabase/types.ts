@@ -44,6 +44,33 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_verified_sessions: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          session_id: string
+          user_id: string
+          verified_at: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          session_id: string
+          user_id: string
+          verified_at?: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          session_id?: string
+          user_id?: string
+          verified_at?: string
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -345,6 +372,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_admin: { Args: { _user_id: string }; Returns: boolean }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -358,6 +386,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      has_verified_admin_session: {
+        Args: { _user_id: string }
         Returns: boolean
       }
       move_to_dlq: {
