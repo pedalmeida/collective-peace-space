@@ -1,65 +1,144 @@
 
-Objetivo: desbloquear com urgência o login do backoffice, atacando a causa real do bloqueio no passo “Verificar”.
+Objetivo: eliminar a causa estrutural do problema no login do backoffice, para que o OTP deixe de falhar de forma intermitente e o acesso admin fique também mais seguro.
 
-Diagnóstico
-- As correções anteriores melhoraram o tratamento de erros e o loading, mas não resolveram o problema principal: a submissão/verificação do OTP continua frágil.
-- O que vejo no código:
-  - `AdminLogin.tsx` depende do componente `InputOTP` dentro de um `<form onSubmit={handleVerifyOTP}>`.
-  - `useAuth.ts` faz a verificação via `supabase.functions.invoke("verify-admin-otp")`.
-  - `AdminLayout.tsx` só deixa entrar com `user && isAdmin`.
-- O que os sinais apontam:
-  - O login com password está a funcionar.
-  - A função `verify-admin-otp` existe, mas quase não recebe chamadas.
-  - O problema está muito provavelmente no frontend, antes da chamada sair.
-- Porque as tentativas anteriores falharam:
-  - Elas focaram-se em exceções e estado de loading.
-  - Mas o bug parece estar na interação do campo OTP/submit e no estado do passo de verificação, não apenas no `try/catch`.
+### Root cause identificado
+O problema não é apenas o botão “Verificar”. Há 4 falhas de arquitetura a causar comportamento intermitente:
 
-Solução proposta
-1. Substituir o `InputOTP` por uma implementação mais robusta e simples:
-   - usar um `Input` normal com `inputMode="numeric"`, `pattern="[0-9]*"`, `maxLength={6}`
-   - sanitizar para aceitar apenas dígitos
-   - permitir colar o código completo
-   - isto remove dependência do comportamento interno do `input-otp`, que é o principal suspeito
-2. Tornar o passo OTP persistente:
-   - guardar `admin_login_step = "otp"` em `sessionStorage`
-   - guardar também o email e `loginUserId`
-   - ao montar a página, restaurar automaticamente o passo OTP se existir sessão pendente
-3. Tornar a verificação totalmente explícita:
-   - o botão “Verificar” chama diretamente uma função `handleVerifyOTP()` sem depender só da submissão do form
-   - adicionar também suporte a Enter, mas sem depender disso como caminho principal
-4. Redirecionar explicitamente após sucesso:
-   - depois de `verify2FA` devolver sucesso, navegar programaticamente para `/admin`
-   - assim evitamos depender apenas do rerender com `isAdmin`
-5. Limpar e reforçar o estado:
-   - ao voltar atrás ou sair, limpar `admin_pending_user_id`, `admin_login_step`, `admin_2fa_verified` e código parcial
-   - manter mensagens de erro claras no ecrã
+1. **Race condition de autenticação**
+   - `useAuth` faz verificações admin demasiado cedo, durante o restauro da sessão.
+   - `has_role` depende de `auth.uid()` e pode devolver resultado diferente conforme o token já esteja ou não pronto.
 
-Ficheiros a alterar
+2. **Fonte de verdade duplicada**
+   - `useAuth()` cria estado local e listeners próprios.
+   - `AdminLogin` e `AdminLayout` podem arrancar com estados diferentes e sobrescrever chaves em `sessionStorage`.
+
+3. **2FA guardado só no browser**
+   - O estado `admin_2fa_verified` está em `sessionStorage`, não no backend.
+   - Isso é frágil em refreshes, remounts, token refresh e também não é segurança real.
+
+4. **Funções OTP demasiado confiantes no cliente**
+   - `send-admin-otp` e `verify-admin-otp` recebem `user_id` do body.
+   - O token também está a ser espelhado em `sessionStorage`, o que cria mais um ponto de dessincronização.
+
+### Plano de correção definitiva
+
+#### 1. Centralizar autenticação num único provider
+Criar um `AuthProvider`/contexto global para haver **uma só subscrição** à autenticação e **um só estado** para:
+- `authReady`
+- `user`
+- `isAdminRole`
+- `isAdmin2FAVerified`
+- `adminGateStatus` (`anonymous`, `signed_in_pending_2fa`, `verified_admin`)
+
+Isto elimina o conflito entre múltiplas instâncias de `useAuth`.
+
+#### 2. Corrigir o boot da sessão
+Reestruturar o arranque da auth para:
+- subscrever a mudanças de auth
+- restaurar a sessão
+- só depois marcar `authReady = true`
+
+Sem `await` de verificações pesadas dentro de `onAuthStateChange`. As verificações de admin passam a correr fora desse callback, de forma controlada.
+
+#### 3. Tirar a verificação 2FA do `sessionStorage`
+Substituir `admin_2fa_verified` por uma **sessão admin validada no backend**.
+
+Implementação:
+- criar tabela tipo `admin_verified_sessions`
+- guardar:
+  - `user_id`
+  - `session_id`
+  - `verified_at`
+  - `expires_at`
+- ao validar o OTP, a função backend associa a verificação à sessão autenticada atual
+
+Resultado:
+- refresh deixa de quebrar o estado
+- o backend sabe realmente se aquela sessão admin já passou 2FA
+- o front deixa de depender de flags frágeis no browser
+
+#### 4. Passar a validar 2FA também no controlo de acesso
+Hoje o acesso admin está efetivamente protegido só por role + lógica client-side.
+
+A correção definitiva é:
+- criar função backend/security definer do tipo `has_verified_admin_session()`
+- criar uma função wrapper, por exemplo `can_access_admin()`, que combine:
+  - role admin
+  - sessão autenticada
+  - 2FA verificado e não expirado
+
+Depois atualizar as policies/admin checks para usar esta regra nas áreas protegidas.
+
+Isto garante que o 2FA não é apenas “visual”; passa a ser realmente exigido.
+
+#### 5. Harden das Edge Functions OTP
+Atualizar `send-admin-otp` e `verify-admin-otp` para:
+- ler o utilizador autenticado a partir do bearer token
+- ignorar ou validar estritamente o `user_id` recebido no body
+- confirmar que o caller só pode agir sobre a sua própria conta
+- devolver erros consistentes
+- manter rate limiting e invalidação de códigos anteriores
+- registar logs claros de:
+  - pedido OTP
+  - OTP verificado
+  - OTP expirado
+  - rejeição por sessão inválida
+
+#### 6. Simplificar o frontend do login
+Refatorar `AdminLogin` para usar o estado central do provider:
+- passo 1: credenciais
+- passo 2: OTP pendente
+- passo 3: sessão admin validada
+
+Remover do frontend:
+- `admin_access_token` em `sessionStorage`
+- `admin_2fa_verified` em `sessionStorage`
+- lógica duplicada de recuperação frágil
+
+Manter apenas persistência não sensível, se necessário:
+- email digitado
+- countdown do OTP
+- passo visual atual
+
+#### 7. Tornar o gate `/admin` determinístico
+`AdminLayout` passa a bloquear acesso com base em:
+- `authReady`
+- `canAccessAdmin === true`
+
+Assim deixa de depender de estados temporários ou efeitos que ainda estão a correr.
+
+### Ficheiros a alterar
+- `src/App.tsx`
+- `src/hooks/use-auth.ts` ou substituição por provider + consumer hook
+- novo ficheiro de auth context/provider
 - `src/pages/AdminLogin.tsx`
-  - remover `InputOTP`
-  - trocar por input numérico simples
-  - persistir/restaurar o passo OTP
-  - chamar verificação de forma explícita
-  - navegar para `/admin` após sucesso
-- `src/hooks/use-auth.ts`
-  - manter fallback por `sessionStorage`
-  - devolver sucesso/erro de forma inequívoca
-  - opcionalmente expor um `complete2FA` mais explícito se ajudar a simplificar o fluxo
+- `src/pages/AdminLayout.tsx`
+- `supabase/functions/send-admin-otp/index.ts`
+- `supabase/functions/verify-admin-otp/index.ts`
+- nova migration para sessão admin verificada + atualização de functions/policies admin
 
-Como vou validar quando aprovares
-1. Login com credenciais válidas
-2. Confirmar mudança para o passo OTP
-3. Introduzir ou colar 6 dígitos
-4. Confirmar que sai pedido para `verify-admin-otp`
-5. Confirmar redirecionamento para `/admin`
-6. Testar também:
-   - código inválido
-   - reenvio
-   - refresh da página no passo OTP
-   - mobile
+### Validação após implementação
+Vou validar estes cenários:
+1. login admin completo com OTP válido
+2. refresh no ecrã OTP
+3. refresh após OTP validado
+4. reenvio de código
+5. código inválido
+6. código expirado
+7. logout e novo login imediato
+8. abrir `/admin` sem 2FA validado
+9. confirmar que o acesso admin continua estável em tentativas repetidas
 
-Detalhes técnicos
-- Esta é uma mudança de estratégia, não apenas mais um remendo.
-- Em vez de tentar “curar” o comportamento do componente OTP atual, vamos simplificar o fluxo para o caminho mais previsível e mais seguro.
-- Isto reduz risco de eventos não dispararem, submit falhar silenciosamente, ou o valor OTP não chegar a `otpCode` como esperado.
+### Detalhes técnicos
+- O problema principal é arquitetural, não apenas de UI.
+- A correção certa é trocar:
+  - **estado disperso + flags em browser**
+  por
+  - **uma fonte de verdade central + verificação admin persistida no backend**
+- Isto resolve ao mesmo tempo:
+  - intermitência
+  - refresh bugs
+  - race conditions
+  - fragilidade de sessão
+  - falha de segurança no 2FA
+
